@@ -137,3 +137,6 @@ public/rss/*.xml
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Windows download metadata (WSL)
+*:Zone.Identifier

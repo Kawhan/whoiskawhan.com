@@ -1,2 +1,4 @@
 # Canonicalization: www → root
-https://www.whoiskawhan.com/*  https://whoiskawhan.com/:splat  301
+# Handled by a Cloudflare Redirect Rule (dashboard), not here: _redirects only
+# accepts relative source URLs, so domain-level redirects fail the deploy.
+# https://www.whoiskawhan.com/*  https://whoiskawhan.com/:splat  301
