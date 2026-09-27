@@ -6,7 +6,7 @@
  * used by editorial validation, removing duplicated parsing from each script.
  */
 
-import { readFileSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
 const POSTS_DIR = 'src/content/posts'
@@ -32,6 +32,9 @@ export function parseFrontmatter(raw) {
 // ── File collection ───────────────────────────────────────────────────
 
 function collectMarkdownFiles(dir) {
+  // Git doesn't track empty directories, so the content folder may be absent in CI.
+  if (!existsSync(dir)) return []
+
   const files = []
   const items = readdirSync(dir)
 
@@ -101,6 +104,8 @@ export function getPublishedPosts() {
 // ── TIL collection ────────────────────────────────────────────────────
 
 export function getPublishedTilEntries() {
+  if (!existsSync(TIL_DIR)) return []
+
   const files = readdirSync(TIL_DIR).filter(f => f.endsWith('.md'))
   const entries = []
 
