@@ -29,10 +29,6 @@ export default function Hobbies() {
           <p className="font-mono text-xs font-bold uppercase tracking-[0.095em] text-[#1a1a1a]">{copy.cards[0].kicker}</p>
           <h2 className="my-3 text-3xl font-extrabold leading-tight tracking-[-0.04em]">{copy.cards[0].title}</h2>
           <p className="font-serif leading-7">{copy.cards[0].text}</p>
-          <p className="mt-3 font-serif leading-7">
-            {copy.steamPrefix}{' '}
-            <a className="text-[#057dbc] underline underline-offset-4" href="https://steamcommunity.com/profiles/76561198841570916/" target="_blank" rel="noopener noreferrer">steamcommunity.com/profiles/76561198841570916</a>.
-          </p>
         </article>
         <article className="border-r border-t border-[#1a1a1a] bg-white p-6">
           <Library className="mb-4 size-6" aria-hidden="true" />

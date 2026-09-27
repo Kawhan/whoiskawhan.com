@@ -177,7 +177,6 @@ export const en: typeof ptBR = {
       { kicker: 'READING', title: 'Reading', text: 'Manga, philosophy and fiction. Stories and ideas built with patience, that feed creativity — not every lesson comes from technical documentation.' },
       { kicker: 'TABLE', title: 'Tabletop RPG', text: 'A game where the outcome depends on what the table invents together, and no session turns out like the last.' },
     ],
-    steamPrefix: 'My Steam profile is at',
   },
   privacy: {
     title: 'Privacy Policy',

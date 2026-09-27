@@ -85,7 +85,7 @@ describe('blog editorial pages', () => {
     expect(screen.getByRole('img', { name: /kawhan laurindo de lima/i })).toHaveAttribute('src', '/profile/kawhan.jpg')
     expect(screen.getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', 'https://github.com/Kawhan')
     expect(screen.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute('href', 'https://www.linkedin.com/in/kawhan/')
-    expect(screen.getByRole('link', { name: 'Steam' })).toHaveAttribute('href', 'https://steamcommunity.com/profiles/76561198841570916/')
+    expect(screen.queryByRole('link', { name: 'Steam' })).not.toBeInTheDocument()
     expect(screen.getByRole('navigation', { name: /neste texto/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/comentários/i)).toBeInTheDocument()
   })

@@ -176,7 +176,6 @@ export const ptBR = {
       { kicker: 'LEITURA', title: 'Leitura', text: 'Mangá, filosofia e ficção. Histórias e ideias construídas com paciência, que alimentam criatividade — nem todo aprendizado vem de documentação técnica.' },
       { kicker: 'MESA', title: 'RPG de mesa', text: 'Um jogo em que o resultado depende do que a mesa inventa junto, e nenhuma sessão sai igual à outra.' },
     ],
-    steamPrefix: 'Meu perfil na Steam fica em',
   },
   privacy: {
     title: 'Política de Privacidade',

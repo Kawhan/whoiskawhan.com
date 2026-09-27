@@ -10,7 +10,7 @@ describe('hobbies page', () => {
     window.localStorage.setItem(i18nStorageKey, 'pt-BR')
   })
 
-  it('renders the hobby cards and the external Steam profile', () => {
+  it('renders the hobby cards without the Steam profile link', () => {
     render(
       <MemoryRouter initialEntries={['/hobbies']}>
         <I18nProvider>
@@ -22,7 +22,7 @@ describe('hobbies page', () => {
     )
 
     expect(screen.getByRole('heading', { level: 1, name: /fora do editor/i })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /steamcommunity.com\/profiles\/76561198841570916/i })).toHaveAttribute('href', 'https://steamcommunity.com/profiles/76561198841570916/')
+    expect(screen.queryByRole('link', { name: /steamcommunity/i })).not.toBeInTheDocument()
     // "Jogos" aparece só no card de resumo; a seção de galerias foi retirada.
     expect(screen.getAllByRole('heading', { name: /^jogos$/i })).toHaveLength(1)
     expect(screen.getByRole('heading', { name: /^leitura$/i })).toBeInTheDocument()

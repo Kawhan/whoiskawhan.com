@@ -16,21 +16,12 @@ function LinkedinIcon({ className }: { className?: string }) {
   )
 }
 
-function SteamIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M11.98 0C5.67 0 .5 4.87 0 11.06l6.44 2.66a3.4 3.4 0 0 1 1.92-.6l2.86-4.14v-.06a4.55 4.55 0 1 1 4.55 4.56h-.11l-4.08 2.9v.23a3.42 3.42 0 0 1-6.78.66L.12 15.09A12 12 0 1 0 11.98 0Zm-4.4 18.2-1.48-.61a2.56 2.56 0 0 0 4.4-1.18 2.56 2.56 0 0 0-3.5-2.65l1.53.63a1.88 1.88 0 1 1-1.44 3.48l.49.33Zm11.23-8.66a3.03 3.03 0 1 0-6.07 0 3.03 3.03 0 0 0 6.07 0Zm-5.31 0a2.28 2.28 0 1 1 4.56 0 2.28 2.28 0 0 1-4.56 0Z" />
-    </svg>
-  )
-}
-
 // Para adicionar uma rede: desenhe o ícone SVG acima e inclua a entrada aqui.
 // Os ícones de Substack, YouTube e Dribbble continuam no arquivo, sem uso,
 // caso você queira essas redes depois.
 const socialLinks = [
   { label: 'GitHub', href: 'https://github.com/Kawhan', Icon: GithubIcon },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/kawhan/', Icon: LinkedinIcon },
-  { label: 'Steam', href: 'https://steamcommunity.com/profiles/76561198841570916/', Icon: SteamIcon },
 ]
 
 export function SocialLinks({ className = '' }: { className?: string }) {
