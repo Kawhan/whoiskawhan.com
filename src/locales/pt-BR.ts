@@ -148,7 +148,7 @@ export const ptBR = {
       'Hoje isso significa desenvolver soluções para a indústria, pensando em escalabilidade e segurança desde o começo. Mas a tecnologia é detalhe — .NET hoje, Python ontem, C na 42. O trabalho, no fundo, sempre vai ser o mesmo: resolver problema.',
       'Comecei a resolver problema de verdade ainda na graduação, e não parei desde então. Passei por desktop, back-end e front-end até entender onde eu rendo mais — que é no back-end, perto de onde a decisão técnica pesa.',
     ],
-    dndAlt: 'Dado de vinte lados sobre uma mesa escura, iluminado em tom alaranjado',
+    dndAlt: 'Dado de vinte lados sobre um mapa antigo, iluminado por uma lanterna, com livro, miniatura de guerreiro e moedas ao redor',
     badgesTitle: 'Badges',
     badgesText: 'Sou uma pessoa que ama coleções, e uma dessas minhas coleções atuais são as badges no',
     credential: 'Ver credencial',

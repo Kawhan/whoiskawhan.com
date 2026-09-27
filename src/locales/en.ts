@@ -149,7 +149,7 @@ export const en: typeof ptBR = {
       'Right now that means building software for industry, with scalability and security considered from the start. But the technology is a detail — .NET today, Python yesterday, C at 42. The job underneath is always the same: solve the problem.',
       'I started solving real problems back in university and never stopped. I went through desktop, back-end and front-end until I understood where I am strongest — the back-end, close to where technical decisions carry weight.',
     ],
-    dndAlt: 'A twenty-sided die on a dark table, lit in warm orange',
+    dndAlt: 'A twenty-sided die on an old map, lit by a lantern, surrounded by a book, a warrior miniature and coins',
     badgesTitle: 'Badges',
     badgesText: 'I love collections, and one of my current collections is badges on',
     credential: 'View credential',
