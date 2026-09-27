@@ -39,12 +39,12 @@ function LanguageSelect() {
   const { locale, setLocale, t } = useI18n()
 
   return (
-    <div className="relative inline-flex cursor-pointer items-center border border-line transition-colors hover:bg-graphite hover:text-on-graphite">
+    <div className="relative inline-flex h-[38px] cursor-pointer items-center border border-line transition-colors hover:bg-graphite hover:text-on-graphite">
       <span className="sr-only">{t('language.label')}</span>
       <select
         value={locale}
         onChange={(event) => setLocale(event.target.value as Locale)}
-        className="cursor-pointer appearance-none bg-transparent py-[7px] pr-7 pl-3 font-mono text-[11px] font-bold uppercase tracking-[1.1px] text-current outline-none"
+        className="h-full cursor-pointer appearance-none bg-transparent pr-7 pl-3 font-mono text-[11px] font-bold uppercase tracking-[1.1px] text-current outline-none"
         aria-label={t('language.label')}
       >
         {locales.map((item) => (
