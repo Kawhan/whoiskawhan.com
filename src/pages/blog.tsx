@@ -1,4 +1,6 @@
 import { PostCard } from '@/components/blog/post-card'
+import { EmptyState } from '@/components/ui/empty-state'
+import { PenLine } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
 import { getBalancedEditorialGridItemClass, getPublishedPosts, paginatePosts } from '@/lib/posts'
 import { useI18n } from '@/lib/i18n'
@@ -22,6 +24,16 @@ export default function Blog() {
         </p>
       </section>
 
+      {posts.length === 0 ? (
+        <EmptyState
+          icon={<PenLine className="size-6" />}
+          kicker={t('blog.emptyKicker')}
+          title={t('blog.emptyTitle')}
+          text={t('blog.emptyText')}
+          action={{ to: localizedPath('/portfolio#projects'), label: t('blog.emptyAction') }}
+        />
+      ) : (
+      <>
       <div>
         <div className="mt-8">{hero && <PostCard post={hero} featured />}</div>
 
@@ -56,6 +68,8 @@ export default function Blog() {
           )}
         </div>
       </nav>
+      </>
+      )}
     </div>
   )
 }

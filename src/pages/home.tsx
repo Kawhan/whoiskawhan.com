@@ -38,7 +38,7 @@ const Home: React.FC = () => {
           <nav className="flex flex-wrap items-center gap-3" aria-label={copy.actionsLabel}>
             <Link
               to={localizedPath('/blog')}
-              className="inline-flex items-center gap-2 bg-graphite px-4 py-3 font-mono text-xs font-bold uppercase tracking-[0.06875em] text-white transition-colors hover:bg-white hover:text-ink dark:bg-[var(--dark-surface-strong)] dark:text-[var(--dark-text)] dark:hover:bg-[var(--dark-text)] dark:hover:text-[var(--dark-bg)]"
+              className="inline-flex items-center gap-2 border border-line px-4 py-3 font-mono text-xs font-bold uppercase tracking-[0.06875em] text-ink transition-colors hover:bg-line hover:text-bg dark:hover:bg-[var(--dark-text)] dark:hover:text-[var(--dark-bg)]"
             >
               {copy.readArticles}
               <ArrowRight className="size-3.5" />
@@ -81,6 +81,8 @@ const Home: React.FC = () => {
       </section>
 
       {/* ───── Recent Writing ───── */}
+      {/* Sem posts publicados, a seção inteira some (inclusive a barra). */}
+      {featuredPost && (
       <section className="mt-0" aria-label={copy.latest}>
         {/* Graphite bar — mesma largura do hero e da grade de posts abaixo,
             para as bordas alinharem. */}
@@ -93,8 +95,7 @@ const Home: React.FC = () => {
           </p>
         </div>
 
-        {featuredPost && (
-          <div className="grid border-r border-b border-l border-line md:grid-cols-[1fr_420px]">
+        <div className="grid border-r border-b border-l border-line md:grid-cols-[1fr_420px]">
             {/* Featured article */}
             <div className="border-r border-line">
               <PostCard post={featuredPost} featured />
@@ -109,16 +110,16 @@ const Home: React.FC = () => {
               {/* "All articles" link card */}
               <Link
                 to={localizedPath('/blog')}
-                className="flex flex-col gap-2 border-t border-line bg-graphite p-[18px] md:p-[22px] transition-colors hover:bg-[#2A2A2F]"
+                className="group flex flex-col gap-2 border-t border-line bg-paper p-[18px] md:p-[22px] transition-colors hover:bg-[#1a1a1a]"
                 data-nav-item
               >
-                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.06875em] text-[#8EA0FF]">
+                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.06875em] text-accent group-hover:text-[#8EA0FF] dark:group-hover:text-[#5c554d]">
                   {copy.archive}
                 </p>
-                <h3 className="font-display text-[30px] leading-[0.95] text-white">
+                <h3 className="font-display text-[30px] leading-[0.95] text-ink group-hover:text-white dark:group-hover:text-[var(--dark-bg)]">
                   {copy.moreWriting}
                 </h3>
-                <p className="font-serif text-base leading-[1.12] text-[#C8C2B8]">
+                <p className="font-serif text-base leading-[1.12] text-muted group-hover:text-[#c8c2b8] dark:group-hover:text-[#5c554d]">
                   {locale === 'pt-BR'
                     ? 'A página completa com posts, ensaios e notas técnicas.'
                     : 'The full page with posts, essays, and technical notes.'}
@@ -126,8 +127,8 @@ const Home: React.FC = () => {
               </Link>
             </div>
           </div>
-        )}
       </section>
+      )}
 
       {/* ───── Open Source / Projetos ───── */}
       <section className="mt-16 mb-16">

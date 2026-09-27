@@ -38,6 +38,10 @@ export const ptBR = {
   'blog.notFoundTitle': 'Artigo não encontrado',
   'blog.notFoundDescription': 'Esse slug não existe ou o texto ainda não foi publicado.',
   'blog.backToBlog': 'Voltar para o blog',
+  'blog.emptyKicker': 'NADA PUBLICADO AINDA',
+  'blog.emptyTitle': 'O primeiro artigo está a caminho',
+  'blog.emptyText': 'Ainda estou escrevendo. Enquanto isso, dá para ver os projetos que construí.',
+  'blog.emptyAction': 'Ver projetos',
   'blog.by': 'POR',
   'blog.codeCopy': 'Copiar',
   'blog.codeCopied': 'Copiado',
@@ -60,6 +64,10 @@ export const ptBR = {
   'til.paginationLabel': 'Paginação dos TILs',
   'til.notFoundTitle': 'TIL não encontrado',
   'til.backToTil': 'Voltar para TIL',
+  'til.emptyKicker': 'NADA POR AQUI AINDA',
+  'til.emptyTitle': 'Nenhuma nota ainda',
+  'til.emptyText': 'As notas aparecem aqui conforme eu aprendo algo que vale registrar. Enquanto isso, dá para ver os projetos que construí.',
+  'til.emptyAction': 'Ver projetos',
   home: {
     headline: 'Escrevo código para provar que a ideia funciona.',
     intro: 'Sou o Kawhan. Faço software há quatro anos e hoje construo sistemas para a indústria. Escrevo por dois motivos: resolver problema de verdade e tirar ideia do papel — se não roda, ainda é palpite.',
@@ -94,6 +102,8 @@ export const ptBR = {
     docs: 'Documentação',
     sponsor: 'Apoiar no GitHub Sponsors',
     intro: 'Coisas que eu quis provar que funcionavam, então construí.',
+    viewAllKicker: 'Portfólio',
+    viewAllTitle: 'Conheça mais sobre meu trabalho',
     projects: {
       springMicroservices: 'O Opportunity de novo, desta vez quebrado em microsserviços com Spring Boot, Eureka para descoberta e gateway de autenticação. A pergunta era se eu conseguia fazer aquilo escalar sem virar uma bagunça distribuída.',
       opportunity: 'Um sistema de vagas para o Campus IV da UFPB: aluno e professor entram com e-mail institucional, e dá para ver em gráfico quem se interessou por qual vaga. Django, PostgreSQL, JWT e Docker.',
@@ -167,12 +177,6 @@ export const ptBR = {
       { kicker: 'MESA', title: 'RPG de mesa', text: 'Um jogo em que o resultado depende do que a mesa inventa junto, e nenhuma sessão sai igual à outra.' },
     ],
     steamPrefix: 'Meu perfil na Steam fica em',
-    // Título grande de cada bloco de hobby. Ao criar um novo (leitura, RPG),
-    // adicione a chave aqui e nos dois locales.
-    gamesTitle: 'Jogos',
-    nowPlayingTitle: 'JOGANDO AGORA',
-    allTimeTitle: 'JOGOS QUE MARCARAM',
-    coverAlt: 'Capa de',
   },
   privacy: {
     title: 'Política de Privacidade',

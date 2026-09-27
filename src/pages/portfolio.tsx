@@ -81,19 +81,25 @@ export default function Portfolio() {
         </ul>
       </section>
 
-      <section className="mt-12 grid gap-8 border-2 border-[#1a1a1a] p-6 md:grid-cols-[1fr_auto] md:items-center">
-        <div>
-          <p className="font-mono text-xs font-bold uppercase tracking-[0.095em] text-[#1a1a1a]">{copy.availability}</p>
-          <h2 className="mt-2 text-4xl font-extrabold leading-none tracking-[-0.045em]">{copy.ctaTitle}</h2>
-          <p className="mt-3 max-w-2xl font-serif leading-7">
-            {copy.ctaText}
-          </p>
-        </div>
+      {/* Mesmo padrão dos cards de projeto acima: o bloco inteiro é o link. */}
+      <section className="mt-12 border border-[#1a1a1a]">
         <Link
           to={localizedPath('/about')}
-          className="inline-flex min-h-12 items-center justify-center border-2 border-[#1a1a1a] bg-[#1a1a1a] px-6 font-sans text-sm font-extrabold uppercase tracking-[0.08em] text-white transition-colors hover:bg-white hover:text-[#1a1a1a]"
+          className="group grid gap-6 bg-white p-6 transition-colors hover:bg-[#1a1a1a] hover:text-white md:grid-cols-[1fr_auto] md:items-center"
         >
-          {copy.ctaLink}
+          <div>
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.095em] text-[#757575] group-hover:text-[#c8c2b8] dark:group-hover:text-[#5c554d]">
+              {copy.availability}
+            </p>
+            <h2 className="mt-3 text-4xl font-extrabold leading-none tracking-[-0.045em]">{copy.ctaTitle}</h2>
+            <p className="mt-3 max-w-2xl font-serif leading-7">
+              {copy.ctaText}
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-[0.095em]">
+            {copy.ctaLink}
+            <ArrowUpRight aria-hidden="true" className="size-6 shrink-0" />
+          </span>
         </Link>
       </section>
     </div>

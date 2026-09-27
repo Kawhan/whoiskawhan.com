@@ -75,7 +75,7 @@ export default function Project() {
           href={project.repo}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-12 items-center gap-2 border-2 border-[#1a1a1a] bg-[#1a1a1a] px-5 font-sans text-sm font-extrabold uppercase tracking-[0.08em] text-white transition-colors hover:bg-white hover:text-[#1a1a1a]"
+          className="inline-flex min-h-12 items-center gap-2 border-2 border-[#1a1a1a] px-5 font-sans text-sm font-extrabold uppercase tracking-[0.08em] transition-colors hover:bg-[#1a1a1a] hover:text-white"
         >
           {copy.repository}
           <ExternalLink size={14} />

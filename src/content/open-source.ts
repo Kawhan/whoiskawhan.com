@@ -14,6 +14,8 @@ export type OpenSourceProject = {
     'Java' | 'Spring' | 'Go' | 'Docker' | 'Rust' | 'Python' | 'C' | 'CSharp' | 'DotNet' | 'PostgreSQL' | 'MySQL' | 'Django'
   >
   year: string
+  /** Caminho em public/, ex: '/projects/opportunity.png'. Opcional: sem logo, o card da home mostra um ícone genérico. */
+  logo?: string
 }
 
 export const openSourceProjects: OpenSourceProject[] = [
@@ -24,6 +26,7 @@ export const openSourceProjects: OpenSourceProject[] = [
     docs: 'https://github.com/Kawhan/SpringMicroservices#readme',
     technologies: ['Java', 'Spring', 'Docker'],
     year: '2023',
+    logo: '/projects/opportunity.png',
   },
   {
     id: 'opportunity',
@@ -32,6 +35,7 @@ export const openSourceProjects: OpenSourceProject[] = [
     docs: 'https://github.com/Kawhan/opportunity#readme',
     technologies: ['Python', 'Django', 'PostgreSQL', 'Docker'],
     year: '2022',
+    logo: '/projects/opportunity.png',
   },
   {
     id: 'journeyApi',
@@ -40,6 +44,7 @@ export const openSourceProjects: OpenSourceProject[] = [
     docs: 'https://github.com/Kawhan/NLW_JOURNEY_.NET_API#readme',
     technologies: ['CSharp', 'DotNet'],
     year: '2024',
+    logo: '/projects/generic.png',
   },
   {
     id: 'controleContatos',
@@ -48,6 +53,7 @@ export const openSourceProjects: OpenSourceProject[] = [
     docs: 'https://github.com/Kawhan/controleContatos.NetMVC#readme',
     technologies: ['CSharp', 'DotNet', 'MySQL'],
     year: '2024',
+    logo: '/projects/generic.png',
   },
   {
     id: 'libft',
@@ -56,6 +62,7 @@ export const openSourceProjects: OpenSourceProject[] = [
     docs: 'https://github.com/Kawhan/libft_c#readme',
     technologies: ['C'],
     year: '2022',
+    logo: '/projects/generic.png',
   },
 ]
 

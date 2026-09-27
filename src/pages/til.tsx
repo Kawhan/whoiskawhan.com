@@ -1,5 +1,7 @@
 import { Link, useSearchParams } from 'react-router'
+import { NotebookPen } from 'lucide-react'
 import { SEO } from '@/components/seo'
+import { EmptyState } from '@/components/ui/empty-state'
 import { formatPostDate, getResponsiveGridClass, paginatePosts } from '@/lib/posts'
 import { getPublishedTilEntries } from '@/lib/til'
 import { useI18n } from '@/lib/i18n'
@@ -22,6 +24,16 @@ export default function Til() {
           {t('til.description')}
         </p>
       </section>
+      {entries.length === 0 ? (
+        <EmptyState
+          icon={<NotebookPen className="size-6" />}
+          kicker={t('til.emptyKicker')}
+          title={t('til.emptyTitle')}
+          text={t('til.emptyText')}
+          action={{ to: localizedPath('/portfolio#projects'), label: t('til.emptyAction') }}
+        />
+      ) : (
+      <>
       <div>
         <div className={`mt-8 grid border-b border-l border-[#1a1a1a] ${getResponsiveGridClass(pagination.items.length)}`} data-testid="til-grid">
           {pagination.items.map((entry) => (
@@ -51,6 +63,8 @@ export default function Til() {
           )}
         </div>
       </nav>
+      </>
+      )}
     </div>
   )
 }
