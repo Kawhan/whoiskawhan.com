@@ -1,0 +1,57 @@
+# whoiskawhan.com
+
+> whoiskawhan.com is the personal editorial website of Kawhan Laurindo, a Brazilian fullstack software engineer. The site combines technical writing, short learning notes, portfolio material, open source projects, books, hobbies, and professional background. Primary languages are pt-BR and English.
+
+This file is intended to help LLMs and agents understand the public structure of the site quickly.
+
+Important notes:
+
+- The site is content-first and editorial in tone, not a SaaS product or API platform.
+- Most core pages are available in pt-BR and under `/en/` in English.
+- Blog posts are localized in pt-BR and English when translations exist.
+- TIL content currently exists on the pt-BR route set; `/en/til` is not a published section.
+- There are no public markdown mirrors of pages yet; use the curated links below.
+
+## Primary pages
+
+- [Home](https://whoiskawhan.com/): Site entry point with author positioning, recent writing, and open source highlights.
+- [About](https://whoiskawhan.com/about): Biography, career timeline, technical background, certifications, and side project context.
+- [Portfolio](https://whoiskawhan.com/portfolio): Main areas of work, including payments, frontend systems, and runtime/operations.
+- [Blog](https://whoiskawhan.com/blog): Long-form technical writing about software architecture, frontend, operations, payments, and engineering decisions.
+- [TIL](https://whoiskawhan.com/til): Short learning notes and technical observations.
+- [Books](https://whoiskawhan.com/books): Curated engineering and adjacent reading recommendations.
+- [Hobbies](https://whoiskawhan.com/hobbies): Personal interests outside day-to-day engineering work.
+
+## English entry points
+
+- [English home](https://whoiskawhan.com/en/): Main English landing page.
+- [English about](https://whoiskawhan.com/en/about): English version of the about page.
+- [English portfolio](https://whoiskawhan.com/en/portfolio): English version of the portfolio page.
+- [English blog](https://whoiskawhan.com/en/blog): English blog index.
+- [English books](https://whoiskawhan.com/en/books): English books page.
+- [English hobbies](https://whoiskawhan.com/en/hobbies): English hobbies page.
+
+## Content and interpretation guidance
+
+- The author writes in an editorial, direct, anti-corporate tone focused on real-world software engineering.
+- Topics commonly include architecture, frontend systems, APIs, payments, DevOps, operational reliability, and open source.
+- The portfolio is not a project catalog for this website itself; it describes professional areas of expertise and delivery.
+- The site is personal but professionally relevant: useful for understanding the author's background, interests, writing, and technical positioning.
+- For current updates, prefer the homepage, blog index, and about page.
+
+## Feeds and machine-useful resources
+
+- [Blog RSS](https://whoiskawhan.com/rss/blog.xml): Syndication feed for blog posts.
+- [TIL RSS](https://whoiskawhan.com/rss/til.xml): Syndication feed for short learning notes.
+- [robots.txt](https://whoiskawhan.com/robots.txt): Crawl guidance and sitemap reference.
+- [security.txt](https://whoiskawhan.com/.well-known/security.txt): Security contact and disclosure channel.
+
+## External profile and source links
+
+- [GitHub profile](https://github.com/kawhan): Author profile and open source presence.
+- [Site repository](https://github.com/kawhan/whoiskawhan.com): Source for this website.
+
+## Optional
+
+- [Privacy policy](https://whoiskawhan.com/privacy-policy): Data handling, newsletter, comments, cookies/local storage, and third-party services.
+- [Terms of use](https://whoiskawhan.com/terms-of-use): Usage terms, content scope, code example disclaimers, and affiliate/link notes.

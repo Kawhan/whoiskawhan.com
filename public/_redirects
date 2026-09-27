@@ -1,0 +1,2 @@
+# Canonicalization: www → root
+https://www.whoiskawhan.com/*  https://whoiskawhan.com/:splat  301
