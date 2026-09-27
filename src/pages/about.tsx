@@ -44,9 +44,11 @@ export default function About() {
         {copy.journey}
       </section>
 
-      <div className="grid grid-cols-1 border-b border-l border-[#1a1a1a] md:grid-cols-3">
+      {/* A borda de baixo fica em cada card, não na grade: assim a célula
+          vazia da última linha não ganha uma linha solta embaixo. */}
+      <div className="grid grid-cols-1 border-l border-t border-[#1a1a1a] md:grid-cols-3">
         {copy.timeline.map((item) => (
-          <article key={item.label} className="border-r border-t border-[#1a1a1a] bg-white p-6">
+          <article key={item.label} className="border-r border-b border-[#1a1a1a] bg-white p-6">
             <p className="font-mono text-xs font-bold uppercase tracking-[0.095em] text-[#1a1a1a]">
               {item.label}
             </p>
@@ -58,8 +60,9 @@ export default function About() {
         ))}
       </div>
 
-      <section className="mt-12 grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-        <div className="border-t border-[#1a1a1a] pt-6">
+      {/* Divisor de largura total, igual ao que separa a abertura da trajetória. */}
+      <section className="mt-12 grid gap-8 border-t border-[#1a1a1a] pt-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+        <div>
           {copy.paragraphs.map((paragraph, index) => <p key={paragraph} className={`${index < 2 ? 'mb-6 ' : ''}font-serif text-lg leading-8 text-[#1a1a1a]`}>{paragraph}</p>)}
           <img
             src="/cover/rpg.jpg"
