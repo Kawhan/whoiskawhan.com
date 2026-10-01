@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { getAuthorByUsername } from '@/content/authors'
-import { BLOG_POSTS_PER_PAGE, getBalancedEditorialGridItemClass, getPostBySlug, getPublishedPosts, getResponsiveGridClass, paginatePosts } from './posts'
+import { BLOG_POSTS_PER_PAGE, getBalancedEditorialGridItemClass, getPostBySlug, getPublishedPosts, getResponsiveGridClass } from './posts'
+import { paginate } from './pagination'
 import { FIXTURE_DRAFT_SLUG, FIXTURE_POST_SLUG } from '@/test/fixtures/editorial'
 
 // Os testes rodam sobre conteúdo fixo, não sobre o que está em src/content/.
@@ -69,9 +70,9 @@ describe('blog content repository', () => {
 
   it('paginates posts and clamps invalid page numbers', () => {
     const posts = getPublishedPosts()
-    const firstPage = paginatePosts(posts, 1)
-    const secondPage = paginatePosts(posts, 2)
-    const invalidPage = paginatePosts(posts, 99)
+    const firstPage = paginate(posts, 1, BLOG_POSTS_PER_PAGE)
+    const secondPage = paginate(posts, 2, BLOG_POSTS_PER_PAGE)
+    const invalidPage = paginate(posts, 99, BLOG_POSTS_PER_PAGE)
     const expectedTotalPages = Math.ceil(posts.length / BLOG_POSTS_PER_PAGE)
 
     expect(BLOG_POSTS_PER_PAGE).toBe(10)

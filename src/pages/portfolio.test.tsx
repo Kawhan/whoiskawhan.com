@@ -1,9 +1,10 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 import Home from './home'
 import Portfolio from './portfolio'
+import Project from './project'
 import Books from './books'
 import { I18nProvider, i18nStorageKey } from '@/lib/i18n'
 import { openSourceProjects } from '@/content/open-source'
@@ -56,7 +57,8 @@ describe('editorial secondary pages', () => {
     expect(screen.getByText('SERVIÇO PÚBLICO')).toBeInTheDocument()
   })
 
-  it('lists every open source project on the portfolio, linking to its page', () => {
+  it('paginates the open source projects six per page, linking each to its page', () => {
+    window.HTMLElement.prototype.scrollIntoView = () => {}
     render(
       <MemoryRouter initialEntries={['/portfolio']}>
         {withI18n(
@@ -69,13 +71,41 @@ describe('editorial secondary pages', () => {
 
     const section = screen.getByRole('region', { name: 'Projetos' })
     expect(section).toHaveAttribute('id', 'projects')
-    expect(within(section).getAllByRole('link')).toHaveLength(openSourceProjects.length)
-    for (const project of openSourceProjects) {
-      expect(within(section).getByRole('heading', { name: project.name }).closest('a')).toHaveAttribute(
-        'href',
-        `/projects/${project.id}`,
-      )
+
+    const pages = [openSourceProjects.slice(0, 6), openSourceProjects.slice(6)]
+    for (const [index, projects] of pages.entries()) {
+      if (index > 0) fireEvent.click(within(section).getByRole('link', { name: /pr.xima p.gina/i }))
+      expect(within(section).getByText(`Página ${index + 1} de ${pages.length}`)).toBeInTheDocument()
+      const list = within(section).getByRole('list')
+      expect(within(list).getAllByRole('link')).toHaveLength(projects.length)
+      for (const project of projects) {
+        expect(within(list).getByRole('heading', { name: project.name }).closest('a')).toHaveAttribute(
+          'href',
+          `/projects/${project.id}`,
+        )
+      }
     }
+    expect(within(section).queryByRole('link', { name: /pr.xima p.gina/i })).not.toBeInTheDocument()
+    expect(within(section).getByRole('link', { name: /p.gina anterior/i })).toHaveAttribute('href', '/portfolio#projects')
+  })
+
+  it('brings the project page back to the portfolio page it was opened from', () => {
+    window.HTMLElement.prototype.scrollIntoView = () => {}
+    const project = openSourceProjects[6]
+    render(
+      <MemoryRouter initialEntries={['/portfolio?page=2']}>
+        {withI18n(
+          <Routes>
+            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/projects/:id" element={<Project />} />
+          </Routes>,
+        )}
+      </MemoryRouter>,
+    )
+
+    fireEvent.click(screen.getByRole('heading', { name: project.name }))
+    expect(screen.getByRole('heading', { level: 1, name: project.name })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /voltar para o portf.lio/i })).toHaveAttribute('href', '/portfolio?page=2#projects')
   })
 
   it('renders books with the same editorial visual hierarchy', () => {

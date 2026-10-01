@@ -11,6 +11,10 @@ export const ptBR = {
   'project.back': 'Voltar para o portfólio',
   'project.stack': 'TECNOLOGIAS',
   'project.linksLabel': 'Links do projeto',
+  'project.overview': 'VISÃO GERAL',
+  'project.concept': 'CONCEITO',
+  'project.features': 'FUNCIONALIDADES',
+  'project.howItWorks': 'COMO FUNCIONA',
   'kicker.hobbies': 'HOBBIES',
   'kicker.portfolio': 'PORTFÓLIO',
   'kicker.legal': 'LEGAL',
@@ -62,6 +66,16 @@ export const ptBR = {
   'til.title': 'Notas de aprendizado',
   'til.description': 'Registros curtos do que estou aprendendo, testando ou revisitando no dia a dia.',
   'til.paginationLabel': 'Paginação dos TILs',
+  'portfolio.paginationLabel': 'Paginação dos projetos',
+  'about.certificationsSeeAll': 'Ver todos os {total} certificados',
+  'about.certificationPart': 'Parte {part}',
+  'certificates.seoTitle': 'Certificados',
+  'certificates.seoDescription': 'Todos os certificados de Kawhan Laurindo, agrupados por plataforma, com link para cada credencial.',
+  'certificates.kicker': 'CERTIFICADOS',
+  'certificates.title': 'Tudo o que estudei',
+  'certificates.description': 'Os destaques primeiro; depois, cada plataforma com seus cursos, do mais recente ao mais antigo. Clique numa plataforma para abrir a lista.',
+  'certificates.allTitle': 'Por plataforma',
+  'certificates.back': 'Voltar para o Sobre',
   'til.notFoundTitle': 'TIL não encontrado',
   'til.backToTil': 'Voltar para TIL',
   'til.emptyKicker': 'NADA POR AQUI AINDA',
@@ -105,11 +119,131 @@ export const ptBR = {
     viewAllKicker: 'Portfólio',
     viewAllTitle: 'Conheça mais sobre meu trabalho',
     projects: {
+      salesProject: 'Uma API de vendas em .NET com DDD, CQRS via MediatR e eventos publicados no RabbitMQ. Desconto por quantidade calculado no domínio, soft delete e nada de regra de negócio escondida no controller.',
+      goodHamburger: 'API de pedidos de uma lanchonete que descobre sozinha o combo e aplica o maior desconto possível. .NET 10, EF Core, PostgreSQL e testes cobrindo as regras.',
+      pokedexAngular: 'Uma Pokédex em Angular consumindo a PokéAPI: lista, cards e página de detalhe. Pequena de propósito, para praticar o framework moderno organizado por domínio.',
       springMicroservices: 'O Opportunity de novo, desta vez quebrado em microsserviços com Spring Boot, Eureka para descoberta e gateway de autenticação. A pergunta era se eu conseguia fazer aquilo escalar sem virar uma bagunça distribuída.',
       opportunity: 'Um sistema de vagas para o Campus IV da UFPB: aluno e professor entram com e-mail institucional, e dá para ver em gráfico quem se interessou por qual vaga. Django, PostgreSQL, JWT e Docker.',
       journeyApi: 'API em .NET escrita com DDD de verdade, não DDD de slide. Entity Framework, validação dinâmica com FluentValidation e Swagger para quem for consumir.',
       controleContatos: 'CRUD em .NET MVC feito para aprender o framework a fundo: autenticação, permissão por nível de usuário e recuperação de senha por SMTP. Nada de exótico, tudo funcionando.',
       libft: 'Reimplementar a biblioteca padrão do C na 42 São Paulo. Sem garbage collector, sem rede de proteção — só malloc, free e a consequência de errar.',
+    },
+    /** Conteúdo da página de detalhe. `howItWorks` é opcional: sem ele, a seção não aparece. */
+    details: {
+      salesProject: {
+        overview:
+          'Uma API REST para um sistema de vendas: usuários, produtos, filiais e vendas com seus itens. A regra central está nas vendas — o desconto é calculado automaticamente pela quantidade de itens idênticos, o total é recalculado a cada alteração e o preço usado é sempre o do produto no momento da venda.',
+        concept:
+          'DDD com CQRS e eventos. O domínio concentra entidades e regras e não depende de nada; cada caso de uso é um comando com seu handler, validador e mapeamento, despachado pelo MediatR. Toda mudança relevante — venda criada, modificada, cancelada, itens cancelados — vira um evento publicado no RabbitMQ via Rebus, então outros sistemas podem reagir sem que a API saiba quem são eles.',
+        features: [
+          'CRUD de usuários, produtos, filiais e vendas',
+          'Desconto por quantidade: 10% de 4 a 9 itens, 20% de 10 a 20, bloqueio acima disso',
+          'Itens removidos numa atualização são cancelados, não apagados',
+          'Soft delete e reativação de vendas',
+          'Paginação e filtros por nome, status e período',
+          'Eventos de domínio publicados no RabbitMQ',
+          'Logging estruturado com Serilog e tratamento global de exceções',
+        ],
+        howItWorks:
+          'A solução é dividida em WebApi, Application, Domain, ORM, IoC e Common. A requisição chega na WebApi, vira um comando validado com FluentValidation e segue para o handler na Application, que aplica as regras do Domain, persiste pelo repositório no PostgreSQL com EF Core e publica o evento. Tudo sobe com Docker Compose: API, banco e RabbitMQ.',
+      },
+      goodHamburger: {
+        overview:
+          'Uma API REST para os pedidos de uma lanchonete. O cardápio tem sanduíches e acompanhamentos, e o pedido identifica sozinho o combo montado: sanduíche, batata e refrigerante levam 20% de desconto; sanduíche e refrigerante, 15%; sanduíche e batata, 10%. Ao editar um pedido, total e desconto são recalculados.',
+        concept:
+          'Regra de negócio como dado. Os descontos são entidades no banco, criadas por seed, e não ifs espalhados pelo código — criar um combo novo é inserir uma linha. Em volta disso, uma arquitetura em camadas simples (Controller, Service, Repository, Mapper) e exceções de domínio tipadas que um middleware traduz para o status HTTP certo.',
+        features: [
+          'Cardápio com sanduíches e acompanhamentos',
+          'Detecção automática de combo com o maior desconto aplicável',
+          'No máximo um sanduíche e nenhum item duplicado por pedido',
+          'Recalculo de total e desconto ao atualizar o pedido',
+          'Middleware global que mapeia exceções para 400, 404, 409 e 500',
+          'Testes unitários dos serviços e de integração',
+          'Documentação interativa com Scalar',
+        ],
+        howItWorks:
+          'O controller recebe o pedido e delega ao service, que valida os itens, cruza a combinação com os descontos cadastrados e calcula o total; o repository persiste no PostgreSQL via EF Core com migrations. Todas as dependências entram pela injeção de dependência nativa do ASP.NET Core, e o projeto roda com Docker Compose.',
+      },
+      pokedexAngular: {
+        overview:
+          'Uma Pokédex feita em Angular 22 com dados da PokéAPI. A tela inicial lista os Pokémon em cards com imagem, e cada card leva para uma página de detalhe.',
+        concept:
+          'Organização por domínio no Angular moderno. O que é infraestrutura — models e o service que conversa com a API — fica em core; cada tela é uma feature isolada; o que é reaproveitável, como o pipe que monta a URL da imagem, fica em shared. Os dados chegam como streams do RxJS e a navegação é feita pelo Angular Router.',
+        features: [
+          'Listagem de Pokémon em cards com imagem',
+          'Página de detalhes por Pokémon',
+          'Consumo da PokéAPI via service com RxJS',
+          'Pipe customizado para as imagens',
+          'Testes com Vitest',
+        ],
+      },
+      springMicroservices: {
+        overview:
+          'Uma POC feita para a disciplina de Sistemas Distribuídos: o Opportunity reescrito como microsserviços. Um serviço cuida da autenticação, outro do cadastro de oportunidades, e os dois se registram no Netflix Eureka — ninguém precisa saber o IP ou a porta de ninguém. Todo o tráfego entra por um gateway, que encaminha cada requisição ao serviço certo.',
+        concept:
+          'Service discovery e API Gateway. Em vez de endereços fixos, cada serviço se anuncia ao Eureka e manda heartbeats para provar que está vivo; o gateway consulta esse registro para decidir para onde encaminhar. Cada microsserviço tem o próprio banco, o que troca consistência imediata por independência: dá para escalar, publicar e derrubar um serviço sem levar o resto junto.',
+        features: [
+          'Registro e descoberta de serviços com Netflix Eureka',
+          'Gateway como ponto único de entrada',
+          'Microsserviço de autenticação',
+          'Microsserviço de cadastro de oportunidades',
+          'Comunicação entre serviços com OpenFeign',
+        ],
+        howItWorks:
+          'Primeiro sobe o servidor Eureka, depois os dois microsserviços, que se registram nele, e por último o gateway na porta 9000, que passa a receber as requisições. O painel do Eureka mostra quais instâncias estão registradas e saudáveis. Os dados ficam em H2 por simplicidade, mas nada impede trocar por PostgreSQL.',
+      },
+      opportunity: {
+        overview:
+          'Uma plataforma de vagas para o Campus IV da UFPB. Iniciação científica e tecnológica, projetos de extensão e desenvolvimento, estágios — tudo o que antes estava espalhado em murais, grupos e e-mails passa a ficar num lugar só, e professores conseguem ver quais alunos se interessaram por cada vaga.',
+        concept:
+          'Centralizar a informação e restringir o acesso à comunidade. O cadastro só é confirmado pelo e-mail institucional, o que garante que quem publica e quem se candidata é de fato do campus. Com as oportunidades e os interesses no mesmo banco, a parte analítica deixa de ser planilha e vira gráfico.',
+        features: [
+          'Cadastro com verificação por e-mail institucional',
+          'Publicação de vagas do Campus IV',
+          'Registro de interesse dos alunos em cada vaga',
+          'Painel analítico com gráficos de interesse',
+          'Autenticação com JWT',
+        ],
+      },
+      journeyApi: {
+        overview:
+          'Uma API para planejar viagens: cadastrar uma viagem e as atividades associadas a ela. Feita durante o NLW da Rocketseat, serviu de terreno para aplicar Clean Code, SOLID e Domain-Driven Design num projeto pequeno o bastante para enxergar cada decisão.',
+        concept:
+          'Domain-Driven Design. O domínio — viagens e atividades — fica no centro, isolado de banco e de HTTP. As regras de validação são declarativas com FluentValidation, em vez de uma cascata de ifs, e os erros viram exceções personalizadas tratadas num filtro único, então toda resposta de erro tem o mesmo formato.',
+        features: [
+          'Cadastro de viagens e das atividades de cada viagem',
+          'Validação declarativa com FluentValidation',
+          'Exceções personalizadas com filtro global de erros',
+          'Documentação interativa com Swagger',
+        ],
+        howItWorks:
+          'A persistência usa Entity Framework com SQLite. Cada requisição passa pela validação do caso de uso antes de tocar o banco; se algo falha, a exceção sobe até o filtro, que devolve uma resposta padronizada.',
+      },
+      controleContatos: {
+        overview:
+          'Uma agenda de contatos em .NET MVC com login. Cada usuário cadastra, edita, exclui e lista os próprios contatos — nome, e-mail e celular —, e administradores gerenciam os usuários da plataforma. Feito para aprender o framework a fundo, de ponta a ponta.',
+        concept:
+          'Isolamento de dados por usuário e senhas com hash. Cada contato fica vinculado a quem o criou, então cada um enxerga só a própria agenda, e o perfil do usuário define quem é administrador. A senha nunca é guardada em texto puro: vira hash no cadastro, o login compara hashes, e a recuperação gera uma senha temporária enviada por e-mail.',
+        features: [
+          'Login com autenticação por sessão',
+          'CRUD de contatos, isolado por usuário',
+          'Gestão de usuários e perfis para administradores',
+          'Recuperação de senha por e-mail via SMTP',
+          'Validação de e-mail e telefone nos formulários',
+        ],
+      },
+      libft: {
+        overview:
+          'O primeiro projeto do currículo da 42 São Paulo: reescrever do zero uma parte da biblioteca padrão do C, somada a funções auxiliares de string e a uma pequena API de listas encadeadas. A biblioteca vira base dos projetos seguintes, então precisa estar certa. Passou com 100% nos testers da comunidade (libftest, libftTester, libft-unit-test e libft-war-machine).',
+        concept:
+          'Gerenciamento manual de memória. Sem runtime por trás, cada malloc pede um free correspondente, e cada função precisa tratar os casos de borda que a libc trata por você: ponteiro nulo, tamanho zero, sobreposição de memória, overflow. Entender por que memmove existe ao lado de memcpy é o tipo de coisa que só fica quando você implementa as duas.',
+        features: [
+          'Funções da libc: manipulação de memória, strings e caracteres',
+          'Funções auxiliares como split, strjoin, substr e itoa',
+          'API de listas encadeadas',
+          'Build como biblioteca estática com Makefile',
+        ],
+      },
     },
   },
   books: {
@@ -164,6 +298,20 @@ export const ptBR = {
     credential: 'Ver credencial',
     badgesPagination: 'Paginação de badges',
     pageStatus: 'Página {current} de {total}',
+    certificationsKicker: 'CERTIFICADOS',
+    certificationsTitle: 'Estudo registrado',
+    certificationsText: 'Os que mais pesaram na minha formação ficam em destaque; o resto está agrupado por plataforma, com link para cada credencial.',
+    certificationsCount: 'CERTIFICADOS',
+    certificationsFeatured: 'Destaques',
+    /** Frase de cada card de destaque — chaves de `certificationHighlights`. */
+    highlights: {
+      cs50: 'O curso de ciência da computação de Harvard: memória, ponteiros, algoritmos e estruturas de dados em C, chegando a Python, SQL e web.',
+      inovahack: 'Hackathon com um desafio real da CAGEPA: entender o problema, prototipar uma solução e apresentá-la em poucos dias.',
+      usp: 'A introdução à computação da USP, em duas partes: lógica, decomposição de problemas, testes e algoritmos clássicos em Python.',
+      py4e: 'Especialização da Universidade de Michigan em cinco cursos: estruturas de dados, web, bancos de dados e um projeto final de visualização.',
+      django: 'Formação completa em Django: modelos, rotas, autenticação, boas práticas, testes e APIs com Django REST Framework.',
+      nlw: 'Uma API em C# e .NET construída do zero durante o evento da Rocketseat — a mesma que virou a NLW Journey API do portfólio.',
+    },
     previous: 'Anterior',
     next: 'Próxima',
   },

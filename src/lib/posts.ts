@@ -4,16 +4,14 @@ import {
   parsePost,
   sortPosts,
   BLOG_POSTS_PER_PAGE,
-  paginatePosts,
   type PostEntry,
   type PostBlock,
-  type PaginatedItems,
 } from './editorial/posts'
 
 // ── Re-exports ─────────────────────────────────────────────────────────
 
 export type BlogPost = PostEntry
-export type { PostBlock, PaginatedItems }
+export type { PostBlock }
 export { BLOG_POSTS_PER_PAGE }
 
 // ── Collection ─────────────────────────────────────────────────────────
@@ -53,10 +51,6 @@ export function getBalancedEditorialGridItemClass(index: number, count: number):
   if (remainder === 2 && index >= count - 2) return 'md:col-span-3'
   return 'md:col-span-2'
 }
-
-// ── Pagination ─────────────────────────────────────────────────────────
-
-export { paginatePosts }
 
 // ── Date formatting ────────────────────────────────────────────────────
 

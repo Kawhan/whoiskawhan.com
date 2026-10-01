@@ -2,10 +2,12 @@ import Footer from '@/components/ui/footer';
 import Navbar from '@/components/ui/navbar';
 import React from 'react';
 import { Outlet } from 'react-router';
+import { useScrollToTop } from '@/lib/use-scroll-to-top';
 import { useSpatialNav } from '@/lib/use-spatial-nav';
 
 const Layout: React.FC = () => {
   useSpatialNav()
+  useScrollToTop()
   return (
     <div className="flex min-h-screen flex-col bg-bg text-ink">
       <Navbar />

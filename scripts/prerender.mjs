@@ -85,6 +85,7 @@ function getHreflangLinks(route, ptPosts, enPosts) {
   const ptToEn = {
     '/': '/en/',
     '/about': '/en/about',
+    '/certificates': '/en/certificates',
     '/blog': '/en/blog',
     '/til': '/en/til',
     '/projects': '/en/projects',
@@ -253,6 +254,9 @@ function getSeoForRoute(route, ptPosts, enPosts, tilEntries, content) {
     '/hobbies': {
       locale: 'pt-BR', title: `Hobbies – ${siteName}`, description: 'Interesses pessoais e hobbies de Kawhan Laurindo.', jsonLd: personJsonLd,
     },
+    '/certificates': {
+      locale: 'pt-BR', title: `Certificados – ${siteName}`, description: 'Todos os certificados de Kawhan Laurindo, agrupados por plataforma, com link para cada credencial.', jsonLd: personJsonLd,
+    },
     '/books': {
       locale: 'pt-BR', title: `Livros – ${siteName}`, description: 'Livros que Kawhan Laurindo leu ou está lendo.', jsonLd: personJsonLd,
     },
@@ -288,6 +292,9 @@ function getSeoForRoute(route, ptPosts, enPosts, tilEntries, content) {
     '/en/hobbies': {
       locale: 'en', title: `Hobbies – ${siteName}`, description: 'Personal interests and hobbies of Kawhan Laurindo.', jsonLd: personJsonLd,
     },
+    '/en/certificates': {
+      locale: 'en', title: `Certificates – ${siteName}`, description: 'Every certificate earned by Kawhan Laurindo, grouped by platform, each linking to its credential.', jsonLd: personJsonLd,
+    },
     '/en/books': {
       locale: 'en', title: `Books – ${siteName}`, description: 'Books Kawhan Laurindo has read or is reading.', jsonLd: personJsonLd,
     },
@@ -319,10 +326,10 @@ async function main() {
   const { ptPosts, enPosts } = getPublishedPosts()
   const tilEntries = getPublishedTilEntries()
 
-  const ptStatic = ['/', '/about', '/blog', '/til', '/portfolio', '/hobbies', '/books', '/privacy-policy', '/terms-of-use', '/404']
+  const ptStatic = ['/', '/about', '/certificates', '/blog', '/til', '/portfolio', '/hobbies', '/books', '/privacy-policy', '/terms-of-use', '/404']
   const ptBlog = ptPosts.map((p) => `/blog/${p.slug}`)
   const ptTil = tilEntries.map((e) => `/til/${e.slug}`)
-  const enStatic = ['/en/', '/en/about', '/en/blog', '/en/til', '/en/portfolio', '/en/hobbies', '/en/books', '/en/privacy-policy', '/en/terms-of-use']
+  const enStatic = ['/en/', '/en/about', '/en/certificates', '/en/blog', '/en/til', '/en/portfolio', '/en/hobbies', '/en/books', '/en/privacy-policy', '/en/terms-of-use']
   const enBlog = enPosts.map((p) => `/en/blog/${p.slug}`)
   const enTil = tilEntries.map((e) => `/en/til/${e.slug}`)
   const templatePath = join(distDir, 'index.html')

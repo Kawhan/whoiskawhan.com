@@ -2,7 +2,8 @@ import { Link, useSearchParams } from 'react-router'
 import { NotebookPen } from 'lucide-react'
 import { SEO } from '@/components/seo'
 import { EmptyState } from '@/components/ui/empty-state'
-import { formatPostDate, getResponsiveGridClass, paginatePosts } from '@/lib/posts'
+import { BLOG_POSTS_PER_PAGE, formatPostDate, getResponsiveGridClass } from '@/lib/posts'
+import { paginate } from '@/lib/pagination'
 import { getPublishedTilEntries } from '@/lib/til'
 import { useI18n } from '@/lib/i18n'
 import { useLocalizedPath } from '@/lib/use-localized-path'
@@ -12,7 +13,7 @@ export default function Til() {
   const localizedPath = useLocalizedPath()
   const entries = getPublishedTilEntries(locale)
   const requestedPage = Number(searchParams.get('page') ?? '1')
-  const pagination = paginatePosts(entries, requestedPage)
+  const pagination = paginate(entries, requestedPage, BLOG_POSTS_PER_PAGE)
 
   return (
     <div>

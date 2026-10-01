@@ -1,22 +1,26 @@
 import { useEffect } from 'react'
-import { Link, useLocation } from 'react-router'
+import { Link, useLocation, useSearchParams } from 'react-router'
 import { ArrowUpRight } from 'lucide-react'
-import { openSourceProjects } from '@/content/open-source'
+import { openSourceProjects, portfolioProjectsPath, PROJECTS_PER_PAGE } from '@/content/open-source'
 import { useI18n } from '@/lib/i18n'
+import { paginate } from '@/lib/pagination'
 import { useLocalizedPath } from '@/lib/use-localized-path'
 
 export default function Portfolio() {
-  const { messages, t } = useI18n()
+  const { messages, t, format } = useI18n()
   const localizedPath = useLocalizedPath()
-  const { hash } = useLocation()
+  const { hash, search } = useLocation()
+  const [searchParams] = useSearchParams()
   const copy = messages.portfolio
   const projectsCopy = messages.openSource
+  const pagination = paginate(openSourceProjects, Number(searchParams.get('page') ?? '1'), PROJECTS_PER_PAGE)
 
   // O router não rola até a âncora em navegação client-side; sem isso o
   // "voltar para o portfólio" (/portfolio#projects) cairia no topo da página.
+  // `search` entra nas dependências para a troca de página também rolar.
   useEffect(() => {
     if (hash) document.getElementById(hash.slice(1))?.scrollIntoView()
-  }, [hash])
+  }, [hash, search])
 
   return (
     <div>
@@ -58,10 +62,11 @@ export default function Portfolio() {
         </div>
 
         <ul className="grid grid-cols-1 border-l border-[#1a1a1a] md:grid-cols-2">
-          {openSourceProjects.map((project) => (
+          {pagination.items.map((project) => (
             <li key={project.id} className="border-b border-r border-[#1a1a1a]">
               <Link
                 to={localizedPath(`/projects/${project.id}`)}
+                state={{ portfolioPage: pagination.currentPage }}
                 className="group flex h-full flex-col bg-white p-6 transition-colors hover:bg-[#1a1a1a] hover:text-white"
               >
                 <p className="font-mono text-xs font-bold uppercase tracking-[0.095em] text-[#757575] group-hover:text-[#c8c2b8] dark:group-hover:text-[#5c554d]">
@@ -79,6 +84,25 @@ export default function Portfolio() {
             </li>
           ))}
         </ul>
+
+        {/* Mesmo padrão de paginação do TIL e do blog. */}
+        {pagination.totalPages > 1 && (
+          <nav className="mt-8 flex flex-col gap-4 border-t border-[#1a1a1a] pt-5 font-mono text-xs uppercase tracking-[0.095em] text-[#1a1a1a] md:flex-row md:items-center md:justify-between" aria-label={t('portfolio.paginationLabel')}>
+            <span className="text-center text-[#757575] md:text-left">{format('blog.pageStatus', { current: pagination.currentPage, total: pagination.totalPages })}</span>
+            <div className="flex gap-3">
+              {pagination.hasPreviousPage ? (
+                <Link className="flex-1 border-2 border-[#1a1a1a] px-4 py-3 text-center transition-colors hover:bg-[#1a1a1a] hover:text-white md:flex-initial" to={localizedPath(portfolioProjectsPath(pagination.currentPage - 1))}>{t('blog.previousPage')}</Link>
+              ) : (
+                <span className="flex-1 border-2 border-[#e2e8f0] px-4 py-3 text-center text-[#999999] md:flex-initial">{t('blog.previousPage')}</span>
+              )}
+              {pagination.hasNextPage ? (
+                <Link className="flex-1 border-2 border-[#1a1a1a] px-4 py-3 text-center transition-colors hover:bg-[#1a1a1a] hover:text-white md:flex-initial" to={localizedPath(portfolioProjectsPath(pagination.currentPage + 1))}>{t('blog.nextPage')}</Link>
+              ) : (
+                <span className="flex-1 border-2 border-[#e2e8f0] px-4 py-3 text-center text-[#999999] md:flex-initial">{t('blog.nextPage')}</span>
+              )}
+            </div>
+          </nav>
+        )}
       </section>
 
       {/* Mesmo padrão dos cards de projeto acima: o bloco inteiro é o link. */}

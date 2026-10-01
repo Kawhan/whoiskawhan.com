@@ -10,6 +10,7 @@ import Portfolio from "./pages/portfolio"
 import Til from "./pages/til"
 import TilPost from "./pages/til-post"
 import Project from "./pages/project"
+import Certificates from "./pages/certificates"
 import Hobbies from "./pages/hobbies"
 import PrivacyPolicy from "./pages/privacy-policy"
 import TermsOfUse from "./pages/terms-of-use"
@@ -21,6 +22,7 @@ function App() {
         {/* PT routes — no prefix */}
         <Route index element={<Home />} />
         <Route path="about" element={<About />} />
+        <Route path="certificates" element={<Certificates />} />
         <Route path="books" element={<Books />} />
         <Route path="portfolio" element={<Portfolio />} />
         <Route path="hobbies" element={<Hobbies />} />
@@ -36,6 +38,7 @@ function App() {
         <Route path="en">
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
+          <Route path="certificates" element={<Certificates />} />
           <Route path="books" element={<Books />} />
           <Route path="portfolio" element={<Portfolio />} />
           <Route path="hobbies" element={<Hobbies />} />

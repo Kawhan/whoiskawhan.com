@@ -1,4 +1,4 @@
-import { openSourceProjects } from '@/content/open-source'
+import { featuredProjects, openSourceProjects } from '@/content/open-source'
 import { useI18n } from '@/lib/i18n'
 import { useLocalizedPath } from '@/lib/use-localized-path'
 import { Link } from 'react-router'
@@ -39,12 +39,12 @@ export function OpenSourceSection() {
 
       {/* Project cards grid */}
       <div className="grid grid-cols-1 md:grid-cols-2">
-        {openSourceProjects.map((project, index) => (
+        {featuredProjects.map((project, index) => (
           <article
             key={project.id}
             className={`group relative min-h-[190px] border-line bg-paper p-6 transition-colors hover:bg-[#1a1a1a] ${
               index % 2 === 0 ? 'md:border-r' : ''
-            } ${index < openSourceProjects.length - 1 ? 'border-b' : ''} md:border-b`}
+            } ${index < featuredProjects.length - 1 ? 'border-b' : ''} md:border-b`}
           >
             <div className="flex h-full items-start gap-5">
               {/* Mark */}

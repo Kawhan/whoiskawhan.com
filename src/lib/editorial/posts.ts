@@ -227,36 +227,3 @@ export function sortPosts<T extends { date: string; slug: string }>(posts: T[]):
 // ── Legacy re-exports to minimize migration churn ──────────────────────
 
 export const BLOG_POSTS_PER_PAGE = 10
-
-export type PaginatedItems<T> = {
-  items: T[]
-  currentPage: number
-  totalPages: number
-  totalItems: number
-  hasPreviousPage: boolean
-  hasNextPage: boolean
-}
-
-export function paginatePosts<T>(
-  postsToPaginate: T[],
-  requestedPage: number,
-  perPage = BLOG_POSTS_PER_PAGE,
-): PaginatedItems<T> {
-  const totalItems = postsToPaginate.length
-  const totalPages = Math.max(1, Math.ceil(totalItems / perPage))
-  const currentPage = Math.min(
-    Math.max(Number.isFinite(requestedPage) ? requestedPage : 1, 1),
-    totalPages,
-  )
-  const start = (currentPage - 1) * perPage
-  const items = postsToPaginate.slice(start, start + perPage)
-
-  return {
-    items,
-    currentPage,
-    totalPages,
-    totalItems,
-    hasPreviousPage: currentPage > 1,
-    hasNextPage: currentPage < totalPages,
-  }
-}

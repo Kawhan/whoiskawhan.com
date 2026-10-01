@@ -13,6 +13,10 @@ export const en: typeof ptBR = {
   'project.back': 'Back to portfolio',
   'project.stack': 'STACK',
   'project.linksLabel': 'Project links',
+  'project.overview': 'OVERVIEW',
+  'project.concept': 'CONCEPT',
+  'project.features': 'FEATURES',
+  'project.howItWorks': 'HOW IT WORKS',
   'kicker.hobbies': 'HOBBIES',
   'kicker.portfolio': 'PORTFOLIO',
   'kicker.legal': 'LEGAL',
@@ -64,6 +68,16 @@ export const en: typeof ptBR = {
   'til.title': 'Learning notes',
   'til.description': 'Short records of what I am learning, testing, or revisiting day to day.',
   'til.paginationLabel': 'TIL pagination',
+  'portfolio.paginationLabel': 'Projects pagination',
+  'about.certificationsSeeAll': 'See all {total} certificates',
+  'about.certificationPart': 'Part {part}',
+  'certificates.seoTitle': 'Certificates',
+  'certificates.seoDescription': 'Every certificate earned by Kawhan Laurindo, grouped by platform, each linking to its credential.',
+  'certificates.kicker': 'CERTIFICATES',
+  'certificates.title': 'Everything I studied',
+  'certificates.description': 'Highlights first; then each platform with its courses, newest to oldest. Click a platform to open its list.',
+  'certificates.allTitle': 'By platform',
+  'certificates.back': 'Back to About',
   'til.notFoundTitle': 'TIL not found',
   'til.backToTil': 'Back to TIL',
   'til.emptyKicker': 'NOTHING HERE YET',
@@ -106,11 +120,130 @@ export const en: typeof ptBR = {
     viewAllKicker: 'Portfolio',
     viewAllTitle: 'See more of my work',
     projects: {
+      salesProject: 'A sales API in .NET with DDD, CQRS through MediatR and events published to RabbitMQ. Quantity discounts computed in the domain, soft deletes, and no business rules hiding in controllers.',
+      goodHamburger: 'An ordering API for a burger joint that figures out the combo on its own and applies the best discount. .NET 10, EF Core, PostgreSQL and tests covering the rules.',
+      pokedexAngular: 'A Pokédex in Angular backed by the PokéAPI: list, cards and a detail page. Small on purpose, to practice the modern framework organized by domain.',
       springMicroservices: 'Opportunity again, this time split into microservices with Spring Boot, Eureka for service discovery and a gateway handling authentication. The question was whether I could make it scale without turning it into a distributed mess.',
       opportunity: 'A job board for UFPB Campus IV: students and professors sign in with their institutional email, and charts show who showed interest in which opening. Django, PostgreSQL, JWT and Docker.',
       journeyApi: 'A .NET API written with real DDD, not slide-deck DDD. Entity Framework, dynamic validation through FluentValidation, and Swagger for whoever consumes it.',
       controleContatos: 'A .NET MVC CRUD built to learn the framework properly: authentication, permissions per user level, and password recovery over SMTP. Nothing exotic, everything working.',
       libft: 'Reimplementing the C standard library at 42 São Paulo. No garbage collector, no safety net — just malloc, free, and the consequences of getting it wrong.',
+    },
+    details: {
+      salesProject: {
+        overview:
+          'A REST API for a sales system: users, products, branches, and sales with their items. The core rule lives in sales — the discount is computed automatically from the number of identical items, the total is recalculated on every change, and the price used is always the product\'s price at the moment of the sale.',
+        concept:
+          'DDD with CQRS and events. The domain holds the entities and rules and depends on nothing; each use case is a command with its own handler, validator and mapping, dispatched by MediatR. Every meaningful change — sale created, modified, cancelled, items cancelled — becomes an event published to RabbitMQ through Rebus, so other systems can react without the API knowing who they are.',
+        features: [
+          'CRUD for users, products, branches and sales',
+          'Quantity discount: 10% for 4 to 9 items, 20% for 10 to 20, blocked above that',
+          'Items removed in an update are cancelled, not deleted',
+          'Soft delete and sale reactivation',
+          'Pagination and filters by name, status and date range',
+          'Domain events published to RabbitMQ',
+          'Structured logging with Serilog and global exception handling',
+        ],
+        howItWorks:
+          'The solution is split into WebApi, Application, Domain, ORM, IoC and Common. A request reaches the WebApi, becomes a command validated with FluentValidation and goes to its handler in Application, which applies the Domain rules, persists through the repository into PostgreSQL with EF Core and publishes the event. Everything starts with Docker Compose: API, database and RabbitMQ.',
+      },
+      goodHamburger: {
+        overview:
+          'A REST API for a burger joint\'s orders. The menu has sandwiches and sides, and each order detects the combo on its own: sandwich, fries and soda get 20% off; sandwich and soda, 15%; sandwich and fries, 10%. Editing an order recalculates its total and discount.',
+        concept:
+          'Business rules as data. Discounts are database entities created by seed data, not ifs scattered through the code — adding a new combo means inserting a row. Around that, a simple layered architecture (Controller, Service, Repository, Mapper) and typed domain exceptions that a middleware translates into the right HTTP status.',
+        features: [
+          'Menu with sandwiches and sides',
+          'Automatic combo detection with the best applicable discount',
+          'At most one sandwich and no duplicate items per order',
+          'Total and discount recalculated when an order is updated',
+          'Global middleware mapping exceptions to 400, 404, 409 and 500',
+          'Unit tests for the services plus integration tests',
+          'Interactive documentation with Scalar',
+        ],
+        howItWorks:
+          'The controller receives the order and hands it to the service, which validates the items, matches the combination against the stored discounts and computes the total; the repository persists to PostgreSQL through EF Core with migrations. Every dependency comes in through ASP.NET Core\'s built-in dependency injection, and the project runs with Docker Compose.',
+      },
+      pokedexAngular: {
+        overview:
+          'A Pokédex built with Angular 22 and data from the PokéAPI. The home screen lists Pokémon as cards with images, and each card leads to a detail page.',
+        concept:
+          'Domain-based organization in modern Angular. Infrastructure — the models and the service that talks to the API — lives in core; each screen is an isolated feature; reusable pieces, like the pipe that builds the image URL, live in shared. Data arrives as RxJS streams and navigation goes through the Angular Router.',
+        features: [
+          'Pokémon list as cards with images',
+          'Detail page for each Pokémon',
+          'PokéAPI consumed through a service with RxJS',
+          'Custom pipe for the images',
+          'Tests with Vitest',
+        ],
+      },
+      springMicroservices: {
+        overview:
+          'A proof of concept for a Distributed Systems course: Opportunity rewritten as microservices. One service handles authentication, another handles job openings, and both register with Netflix Eureka — nobody needs to know anybody else\'s IP or port. All traffic comes in through a gateway that routes each request to the right service.',
+        concept:
+          'Service discovery and an API gateway. Instead of hard-coded addresses, each service announces itself to Eureka and sends heartbeats to prove it is alive; the gateway reads that registry to decide where to route. Each microservice owns its database, trading immediate consistency for independence: you can scale, deploy or take down one service without dragging the rest along.',
+        features: [
+          'Service registration and discovery with Netflix Eureka',
+          'Gateway as the single entry point',
+          'Authentication microservice',
+          'Job openings microservice',
+          'Service-to-service calls with OpenFeign',
+        ],
+        howItWorks:
+          'The Eureka server starts first, then the two microservices, which register with it, and finally the gateway on port 9000, which starts taking requests. The Eureka dashboard shows which instances are registered and healthy. Data lives in H2 for simplicity, though nothing stops you from swapping in PostgreSQL.',
+      },
+      opportunity: {
+        overview:
+          'A job board for UFPB Campus IV. Research and technology initiation, extension and development projects, internships — everything that used to be scattered across bulletin boards, group chats and emails now lives in one place, and professors can see which students showed interest in each opening.',
+        concept:
+          'Centralize the information and restrict access to the community. Sign-up is only confirmed through an institutional email, which guarantees that whoever posts and whoever applies actually belongs to the campus. With openings and interest in the same database, the analytics stop being a spreadsheet and become charts.',
+        features: [
+          'Sign-up verified through institutional email',
+          'Posting Campus IV openings',
+          'Tracking student interest in each opening',
+          'Analytics dashboard with interest charts',
+          'JWT authentication',
+        ],
+      },
+      journeyApi: {
+        overview:
+          'An API for planning trips: register a trip and the activities that belong to it. Built during Rocketseat\'s NLW, it was a testing ground for Clean Code, SOLID and Domain-Driven Design in a project small enough to see every decision.',
+        concept:
+          'Domain-Driven Design. The domain — trips and activities — sits at the center, isolated from the database and from HTTP. Validation rules are declarative with FluentValidation instead of a cascade of ifs, and errors become custom exceptions handled by a single filter, so every error response has the same shape.',
+        features: [
+          'Registering trips and each trip\'s activities',
+          'Declarative validation with FluentValidation',
+          'Custom exceptions with a global error filter',
+          'Interactive documentation with Swagger',
+        ],
+        howItWorks:
+          'Persistence uses Entity Framework with SQLite. Each request goes through the use case\'s validation before touching the database; if something fails, the exception bubbles up to the filter, which returns a standardized response.',
+      },
+      controleContatos: {
+        overview:
+          'A contact book in .NET MVC with sign-in. Each user creates, edits, deletes and lists their own contacts — name, email and phone — and admins manage the platform\'s users. Built to learn the framework thoroughly, end to end.',
+        concept:
+          'Per-user data isolation and hashed passwords. Each contact is tied to whoever created it, so everyone sees only their own contact book, and the user\'s profile decides who is an admin. Passwords are never stored in plain text: they are hashed on sign-up, sign-in compares hashes, and recovery generates a temporary password sent by email.',
+        features: [
+          'Session-based authentication',
+          'Contact CRUD, isolated per user',
+          'User and profile management for admins',
+          'Password recovery by email over SMTP',
+          'Email and phone validation on forms',
+        ],
+      },
+      libft: {
+        overview:
+          'The first project in the 42 São Paulo curriculum: rewriting part of the C standard library from scratch, plus extra string helpers and a small linked-list API. The library becomes the foundation for later projects, so it has to be right. It scored 100% on the community testers (libftest, libftTester, libft-unit-test and libft-war-machine).',
+        concept:
+          'Manual memory management. With no runtime behind you, every malloc needs a matching free, and every function must handle the edge cases libc handles for you: null pointers, zero sizes, overlapping memory, overflow. Understanding why memmove exists next to memcpy is the kind of thing that only sticks once you implement both.',
+        features: [
+          'libc functions: memory, string and character handling',
+          'Helpers such as split, strjoin, substr and itoa',
+          'Linked-list API',
+          'Built as a static library with a Makefile',
+        ],
+      },
     },
   },
   books: {
@@ -165,6 +298,19 @@ export const en: typeof ptBR = {
     credential: 'View credential',
     badgesPagination: 'Badge pagination',
     pageStatus: 'Page {current} of {total}',
+    certificationsKicker: 'CERTIFICATES',
+    certificationsTitle: 'Study on record',
+    certificationsText: 'The ones that shaped me the most are highlighted; the rest are grouped by platform, each linking to its credential.',
+    certificationsCount: 'CERTIFICATES',
+    certificationsFeatured: 'Highlights',
+    highlights: {
+      cs50: "Harvard's computer science course: memory, pointers, algorithms and data structures in C, moving on to Python, SQL and the web.",
+      inovahack: 'A hackathon around a real challenge from CAGEPA: understand the problem, prototype a solution and pitch it in a few days.',
+      usp: "USP's introduction to computing, in two parts: logic, problem decomposition, testing and classic algorithms in Python.",
+      py4e: 'A five-course University of Michigan specialization: data structures, the web, databases and a final visualization project.',
+      django: 'A full Django track: models, routing, authentication, best practices, testing and APIs with Django REST Framework.',
+      nlw: "A C# and .NET API built from scratch during Rocketseat's event — the same one that became the NLW Journey API in my portfolio.",
+    },
     previous: 'Previous',
     next: 'Next',
   },

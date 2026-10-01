@@ -1,15 +1,29 @@
-import { Link, useParams } from 'react-router'
+import { Link, useLocation, useParams } from 'react-router'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 import { SEO } from '@/components/seo'
-import { openSourceProjects, technologyIcons, type OpenSourceProject } from '@/content/open-source'
+import { openSourceProjects, portfolioProjectsPath, technologyIcons, type OpenSourceProject } from '@/content/open-source'
 import { useI18n } from '@/lib/i18n'
 import { useLocalizedPath } from '@/lib/use-localized-path'
+
+type ProjectDetails = {
+  overview: string
+  concept: string
+  features: readonly string[]
+  howItWorks?: string
+}
+
+const sectionLabel = 'font-mono text-xs font-bold uppercase tracking-[0.095em] text-[#757575]'
+const sectionText = 'mt-4 max-w-[720px] font-serif text-lg leading-8 text-[#1a1a1a]'
 
 export default function Project() {
   const { id } = useParams()
   const { messages, t } = useI18n()
   const localizedPath = useLocalizedPath()
   const copy = messages.openSource
+  // O card do portfólio envia a página de origem no state do router; acesso
+  // direto (sem state) volta para a primeira página.
+  const { state } = useLocation()
+  const backPath = localizedPath(portfolioProjectsPath(Number(state?.portfolioPage) || 1))
 
   const project = openSourceProjects.find((item) => item.id === id)
 
@@ -18,7 +32,7 @@ export default function Project() {
       <section className="mx-auto my-10 max-w-[720px] border border-[#1a1a1a] p-8">
         <p className="font-mono text-xs font-bold uppercase tracking-[0.095em] text-[#1a1a1a]">404</p>
         <h1 className="my-3 text-5xl font-extrabold leading-none tracking-[-0.055em]">{t('project.notFoundTitle')}</h1>
-        <Link className="mt-4 inline-flex text-[#057dbc] underline underline-offset-4" to={localizedPath('/portfolio#projects')}>
+        <Link className="mt-4 inline-flex text-[#057dbc] underline underline-offset-4" to={backPath}>
           {t('project.back')}
         </Link>
       </section>
@@ -26,6 +40,7 @@ export default function Project() {
   }
 
   const description = copy.projects[project.id as OpenSourceProject['id']]
+  const details: ProjectDetails = copy.details[project.id as OpenSourceProject['id']]
 
   return (
     <div>
@@ -56,7 +71,33 @@ export default function Project() {
       </section>
 
       <section className="mt-8 border-b border-[#1a1a1a] pb-8">
-        <p className="font-mono text-xs font-bold uppercase tracking-[0.095em] text-[#757575]">{t('project.stack')}</p>
+        <h2 className={sectionLabel}>{t('project.overview')}</h2>
+        <p className={sectionText}>{details.overview}</p>
+      </section>
+
+      <section className="mt-8 border-b border-[#1a1a1a] pb-8">
+        <h2 className={sectionLabel}>{t('project.concept')}</h2>
+        <p className={sectionText}>{details.concept}</p>
+      </section>
+
+      <section className="mt-8 border-b border-[#1a1a1a] pb-8">
+        <h2 className={sectionLabel}>{t('project.features')}</h2>
+        <ul className="mt-4 max-w-[720px] list-disc space-y-2 pl-5 font-serif text-lg leading-8 text-[#1a1a1a] marker:text-[#757575]">
+          {details.features.map((feature) => (
+            <li key={feature}>{feature}</li>
+          ))}
+        </ul>
+      </section>
+
+      {details.howItWorks && (
+        <section className="mt-8 border-b border-[#1a1a1a] pb-8">
+          <h2 className={sectionLabel}>{t('project.howItWorks')}</h2>
+          <p className={sectionText}>{details.howItWorks}</p>
+        </section>
+      )}
+
+      <section className="mt-8 border-b border-[#1a1a1a] pb-8">
+        <p className={sectionLabel}>{t('project.stack')}</p>
         <ul className="mt-4 flex flex-wrap gap-3">
           {project.technologies.map((tech) => (
             <li
@@ -94,7 +135,7 @@ export default function Project() {
       </nav>
 
       <Link
-        to={localizedPath('/portfolio#projects')}
+        to={backPath}
         className="mt-8 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.095em] text-[#057dbc] underline underline-offset-4"
       >
         <ArrowLeft size={14} />

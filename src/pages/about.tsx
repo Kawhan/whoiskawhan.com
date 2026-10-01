@@ -1,11 +1,17 @@
 import { useState } from "react";
+import { Link } from "react-router";
+import { ArrowUpRight } from "lucide-react";
+import { FeaturedCertifications } from "@/components/certifications/certification-lists";
 import { credlyBadges } from "@/content/credly-badges";
+import { certifications } from "@/content/certifications";
 import { useI18n } from "@/lib/i18n";
+import { useLocalizedPath } from "@/lib/use-localized-path";
 
 const BADGES_PER_PAGE = 6;
 
 export default function About() {
-  const { messages } = useI18n()
+  const { messages, format } = useI18n()
+  const localizedPath = useLocalizedPath()
   const copy = messages.about
   const [badgesPage, setBadgesPage] = useState(1);
   const totalBadgePages = Math.max(1, Math.ceil(credlyBadges.length / BADGES_PER_PAGE));
@@ -141,6 +147,34 @@ export default function About() {
             </div>
           </nav>
         </div>
+      </section>
+
+      <section className="mt-12" aria-labelledby="certifications-title">
+        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#1a1a1a] pb-4">
+          <div>
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.095em] text-[#1a1a1a]">{copy.certificationsKicker}</p>
+            <h2 id="certifications-title" className="mt-2 text-4xl font-extrabold leading-none tracking-[-0.045em]">
+              {copy.certificationsTitle}
+            </h2>
+            <p className="mt-3 max-w-2xl font-serif leading-7">{copy.certificationsText}</p>
+          </div>
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.095em] text-[#757575]">
+            {certifications.length} {copy.certificationsCount}
+          </p>
+        </div>
+
+        <FeaturedCertifications />
+
+        {/* Mesmo padrão do bloco "Conheça mais" do portfólio: o bloco inteiro é o link. */}
+        <Link
+          to={localizedPath('/certificates')}
+          className="group mt-6 flex items-center justify-between gap-4 border border-[#1a1a1a] bg-white p-6 transition-colors hover:bg-[#1a1a1a] hover:text-white"
+        >
+          <span className="font-mono text-xs font-bold uppercase tracking-[0.095em]">
+            {format('about.certificationsSeeAll', { total: certifications.length })}
+          </span>
+          <ArrowUpRight aria-hidden="true" className="size-6 shrink-0" />
+        </Link>
       </section>
 
     </div>

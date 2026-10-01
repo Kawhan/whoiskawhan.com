@@ -2,7 +2,8 @@ import { PostCard } from '@/components/blog/post-card'
 import { EmptyState } from '@/components/ui/empty-state'
 import { PenLine } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
-import { getBalancedEditorialGridItemClass, getPublishedPosts, paginatePosts } from '@/lib/posts'
+import { BLOG_POSTS_PER_PAGE, getBalancedEditorialGridItemClass, getPublishedPosts } from '@/lib/posts'
+import { paginate } from '@/lib/pagination'
 import { useI18n } from '@/lib/i18n'
 import { useLocalizedPath } from '@/lib/use-localized-path'
 export default function Blog() {
@@ -11,7 +12,7 @@ export default function Blog() {
   const localizedPath = useLocalizedPath()
   const posts = getPublishedPosts(locale)
   const requestedPage = Number(searchParams.get('page') ?? '1')
-  const pagination = paginatePosts(posts, requestedPage)
+  const pagination = paginate(posts, requestedPage, BLOG_POSTS_PER_PAGE)
   const [hero, ...rest] = pagination.items
 
   return (
