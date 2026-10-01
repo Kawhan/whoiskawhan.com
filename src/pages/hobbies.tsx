@@ -1,4 +1,5 @@
 import { SEO } from '@/components/seo'
+import { PocketArcade } from '@/components/pocket-arcade/pocket-arcade'
 import { useI18n } from '@/lib/i18n'
 import { Gamepad2, Library, Users } from 'lucide-react'
 
@@ -43,6 +44,8 @@ export default function Hobbies() {
           <p className="font-serif leading-7">{copy.cards[2].text}</p>
         </article>
       </section>
+
+      <PocketArcade />
     </div>
   )
 }

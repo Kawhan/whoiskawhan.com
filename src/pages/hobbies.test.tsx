@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 import Hobbies from './hobbies'
@@ -28,6 +28,25 @@ describe('hobbies page', () => {
     expect(screen.getByRole('heading', { name: /^leitura$/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /rpg de mesa/i })).toBeInTheDocument()
     expect(screen.queryByRole('region', { name: /jogando agora/i })).not.toBeInTheDocument()
+  })
+
+  it('inserts a cartridge into the Pocket Arcade', () => {
+    render(
+      <MemoryRouter initialEntries={['/hobbies']}>
+        <I18nProvider>
+          <Routes>
+            <Route path="/hobbies" element={<Hobbies />} />
+          </Routes>
+        </I18nProvider>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Escolha um cartucho')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /encaixar garden snake/i }))
+
+    expect(screen.getByRole('button', { name: /ejetar garden snake/i })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /encaixar garden snake/i })).not.toBeInTheDocument()
+    expect(screen.getByText(/espaço para jogar/i)).toBeInTheDocument()
   })
 
 })
