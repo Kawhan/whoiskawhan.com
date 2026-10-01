@@ -29,7 +29,7 @@ export function FeaturedCertifications() {
   const { messages, locale, format } = useI18n()
 
   return (
-    <ul className="grid grid-cols-1 border-l border-[#1a1a1a] md:grid-cols-2 lg:grid-cols-3" aria-label={messages.about.certificationsFeatured}>
+    <ul className="grid grid-cols-1 border-l border-t border-[#1a1a1a] md:grid-cols-2 lg:grid-cols-3" aria-label={messages.about.certificationsFeatured}>
       {certificationHighlights.map((highlight) => {
         const [singleUrl] = highlight.urls.length === 1 ? highlight.urls : []
         return (

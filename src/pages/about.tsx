@@ -150,7 +150,8 @@ export default function About() {
       </section>
 
       <section className="mt-12" aria-labelledby="certifications-title">
-        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#1a1a1a] pb-4">
+        {/* Sem borda embaixo: a linha de cima vem da própria grade de destaques. */}
+        <div className="flex flex-wrap items-end justify-between gap-4 pb-4">
           <div>
             <p className="font-mono text-xs font-bold uppercase tracking-[0.095em] text-[#1a1a1a]">{copy.certificationsKicker}</p>
             <h2 id="certifications-title" className="mt-2 text-4xl font-extrabold leading-none tracking-[-0.045em]">
