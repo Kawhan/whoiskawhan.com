@@ -3,7 +3,7 @@
 // e pede para o jogo se desenhar num canvas de SCREEN_W x SCREEN_H.
 
 export type Button = 'up' | 'down' | 'left' | 'right' | 'action'
-export type GameId = 'block-tower' | 'grass-snake' | 'star-patrol' | 'sky-hopper'
+export type GameId = 'block-tower' | 'grass-snake' | 'star-patrol' | 'sky-hopper' | 'wall-smash' | 'blast-maze' | 'rock-storm'
 export type Rand = () => number
 
 export const SCREEN_W = 240
@@ -22,6 +22,8 @@ export interface Game {
   readonly tickMs: number
   /** Valores extras exibidos ao lado da tela (ex.: linhas, vidas). */
   stat(): { label: 'lines' | 'length' | 'lives' | 'pipes'; value: number }
+  /** Texto curto extra para o HUD (ex.: power-ups). */
+  badge?(): string
   tick(held: ReadonlySet<Button>): void
   press(button: Button): void
   draw(ctx: CanvasRenderingContext2D): void
@@ -478,7 +480,612 @@ export class SkyHopper implements Game {
   }
 }
 
+/* ------------------------------------------------------------------ */
+/* Wall Smash                                                          */
+/* ------------------------------------------------------------------ */
+
+const PADDLE = { w: 36, h: 4, y: SCREEN_H - 12, speed: 4 }
+const BALL = 4
+const WALL = { cols: 10, rows: 5, w: 21, h: 7, gap: 2, top: 18 }
+
+export class WallSmash implements Game {
+  readonly tickMs = 16
+
+  paddleX = (SCREEN_W - PADDLE.w) / 2
+  ball = { x: 0, y: 0, vx: 0, vy: 0 }
+  /** Bola presa na raquete até o jogador lançar. */
+  stuck = true
+  bricks: Box[] = []
+  speed = 2.4
+  lives = 3
+  score = 0
+  over = false
+
+  constructor() {
+    this.buildWall()
+    this.resetBall()
+  }
+
+  stat() {
+    return { label: 'lives' as const, value: this.lives }
+  }
+
+  private buildWall() {
+    const width = WALL.cols * (WALL.w + WALL.gap) - WALL.gap
+    const ox = (SCREEN_W - width) / 2
+    this.bricks = []
+    for (let r = 0; r < WALL.rows; r++) {
+      for (let c = 0; c < WALL.cols; c++) {
+        this.bricks.push({ x: ox + c * (WALL.w + WALL.gap), y: WALL.top + r * (WALL.h + WALL.gap), w: WALL.w, h: WALL.h })
+      }
+    }
+  }
+
+  private resetBall() {
+    this.stuck = true
+    this.ball = { x: this.paddleX + PADDLE.w / 2 - BALL / 2, y: PADDLE.y - BALL, vx: 0, vy: 0 }
+  }
+
+  press(button: Button) {
+    if (this.over || !this.stuck || (button !== 'action' && button !== 'up')) return
+    this.stuck = false
+    this.ball.vx = this.speed * 0.6
+    this.ball.vy = -this.speed
+  }
+
+  tick(held: ReadonlySet<Button>) {
+    if (this.over) return
+    if (held.has('left')) this.paddleX = Math.max(0, this.paddleX - PADDLE.speed)
+    if (held.has('right')) this.paddleX = Math.min(SCREEN_W - PADDLE.w, this.paddleX + PADDLE.speed)
+
+    const b = this.ball
+    if (this.stuck) {
+      b.x = this.paddleX + PADDLE.w / 2 - BALL / 2
+      return
+    }
+
+    b.x += b.vx
+    b.y += b.vy
+    if (b.x < 0 || b.x + BALL > SCREEN_W) {
+      b.vx *= -1
+      b.x = Math.min(Math.max(b.x, 0), SCREEN_W - BALL)
+    }
+    if (b.y < 0) {
+      b.vy = Math.abs(b.vy)
+      b.y = 0
+    }
+
+    const box = { x: b.x, y: b.y, w: BALL, h: BALL }
+    const paddle = { x: this.paddleX, y: PADDLE.y, w: PADDLE.w, h: PADDLE.h }
+    if (b.vy > 0 && hit(box, paddle)) {
+      // O ângulo depende de onde a bola bate na raquete: centro sobe reto, pontas abrem.
+      const offset = (b.x + BALL / 2 - (this.paddleX + PADDLE.w / 2)) / (PADDLE.w / 2)
+      b.vx = this.speed * Math.max(-1, Math.min(1, offset)) * 1.2
+      b.vy = -this.speed
+      b.y = PADDLE.y - BALL
+    }
+
+    const target = this.bricks.findIndex((brick) => hit(box, brick))
+    if (target >= 0) {
+      this.bricks.splice(target, 1)
+      b.vy *= -1
+      this.score += 10
+      if (this.bricks.length === 0) {
+        this.speed += 0.4
+        this.buildWall()
+        this.resetBall()
+      }
+    }
+
+    if (b.y > SCREEN_H) {
+      this.lives -= 1
+      if (this.lives <= 0) this.over = true
+      else this.resetBall()
+    }
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    clearScreen(ctx)
+    this.bricks.forEach((brick, i) => {
+      ctx.fillStyle = Math.floor(i / WALL.cols) % 2 ? LCD.mid : LCD.fg
+      ctx.fillRect(brick.x, brick.y, brick.w, brick.h)
+    })
+    ctx.fillStyle = LCD.fg
+    ctx.fillRect(this.paddleX, PADDLE.y, PADDLE.w, PADDLE.h)
+    ctx.fillRect(this.ball.x, this.ball.y, BALL, BALL)
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Blast Maze                                                          */
+/* ------------------------------------------------------------------ */
+
+const Tile = { Empty: 0, Pillar: 1, Block: 2 } as const
+type Tile = (typeof Tile)[keyof typeof Tile]
+
+const MAZE = { cols: 15, rows: 11, cell: 16 }
+const FUSE_TICKS = 120
+const FLAME_TICKS = 30
+const ITEM_CHANCE = 0.2
+
+// Power-ups: valor inicial, teto e quanto cada item soma.
+const POWER = {
+  bomb: { base: 1, max: 4 },
+  fire: { base: 2, max: 5 },
+  speed: { base: 0, max: 3 },
+} as const
+type PowerKind = keyof typeof POWER
+const POWER_KINDS = Object.keys(POWER) as PowerKind[]
+
+type Cell = { x: number; y: number }
+type Enemy = Cell & { dir: Point }
+type Item = Cell & { kind: PowerKind; safe: number }
+
+export class BlastMaze implements Game {
+  readonly tickMs = 16
+
+  grid: Tile[][] = []
+  player: Cell = { x: 1, y: 1 }
+  enemies: Enemy[] = []
+  bombs: (Cell & { timer: number })[] = []
+  flames: (Cell & { timer: number })[] = []
+  items: Item[] = []
+  door: Cell = { x: 1, y: 1 }
+  power: Record<PowerKind, number> = { bomb: POWER.bomb.base, fire: POWER.fire.base, speed: POWER.speed.base }
+  /** Ordem em que os itens foram pegos: ao morrer, perde o último. */
+  taken: PowerKind[] = []
+  level = 0
+  lives = 3
+  score = 0
+  over = false
+  private ticks = 0
+  private moveCooldown = 0
+  private readonly rand: Rand
+
+  constructor(rand: Rand = Math.random) {
+    this.rand = rand
+    this.nextLevel()
+  }
+
+  stat() {
+    return { label: 'lives' as const, value: this.lives }
+  }
+
+  badge() {
+    return `B${this.power.bomb} F${this.power.fire} S${this.power.speed}`
+  }
+
+  /** Passos repetidos ficam mais curtos a cada nível de velocidade. */
+  private get moveRepeat() {
+    return 9 - this.power.speed * 2
+  }
+
+  private nextLevel() {
+    this.level += 1
+    const { cols, rows } = MAZE
+    // Borda e pilares fixos em xadrez; blocos quebráveis espalhados, livrando o canto de saída.
+    this.grid = Array.from({ length: rows }, (_, y) =>
+      Array.from({ length: cols }, (_, x) => {
+        if (x === 0 || y === 0 || x === cols - 1 || y === rows - 1 || (x % 2 === 0 && y % 2 === 0)) return Tile.Pillar
+        if (x + y <= 3) return Tile.Empty
+        return this.rand() < 0.45 ? Tile.Block : Tile.Empty
+      }),
+    )
+
+    const blocks = this.cells((c) => this.grid[c.y][c.x] === Tile.Block)
+    this.door = blocks[Math.floor(this.rand() * blocks.length)] ?? { x: cols - 2, y: rows - 2 }
+    this.grid[this.door.y][this.door.x] = Tile.Block
+
+    const spots = this.cells((c) => this.grid[c.y][c.x] === Tile.Empty && c.x + c.y > 8)
+    this.enemies = []
+    for (let i = 0; i < Math.min(2 + this.level, 6) && spots.length; i++) {
+      const [spot] = spots.splice(Math.floor(this.rand() * spots.length), 1)
+      this.enemies.push({ ...spot, dir: DIRS.left })
+    }
+    this.items = []
+    this.respawn()
+  }
+
+  private respawn() {
+    this.player = { x: 1, y: 1 }
+    this.bombs = []
+    this.flames = []
+  }
+
+  private cells(match: (c: Cell) => boolean) {
+    const out: Cell[] = []
+    for (let y = 0; y < MAZE.rows; y++) for (let x = 0; x < MAZE.cols; x++) if (match({ x, y })) out.push({ x, y })
+    return out
+  }
+
+  private bombAt(x: number, y: number) {
+    return this.bombs.find((b) => b.x === x && b.y === y)
+  }
+
+  private walkable(x: number, y: number) {
+    if (this.grid[y]?.[x] !== Tile.Empty) return false
+    return !this.bombAt(x, y)
+  }
+
+  private move(button: Button) {
+    if (button === 'action') return
+    const d = DIRS[button]
+    const nx = this.player.x + d.x
+    const ny = this.player.y + d.y
+    if (!this.walkable(nx, ny)) return
+    this.player = { x: nx, y: ny }
+
+    const item = this.items.findIndex((i) => i.x === nx && i.y === ny)
+    if (item >= 0) this.collect(this.items.splice(item, 1)[0].kind)
+  }
+
+  collect(kind: PowerKind) {
+    this.score += 50
+    if (this.power[kind] >= POWER[kind].max) return
+    this.power[kind] += 1
+    this.taken.push(kind)
+  }
+
+  press(button: Button) {
+    if (this.over) return
+    if (button === 'action') {
+      const { x, y } = this.player
+      if (this.bombs.length < this.power.bomb && !this.bombAt(x, y)) this.bombs.push({ x, y, timer: FUSE_TICKS })
+      return
+    }
+    this.move(button)
+    this.moveCooldown = this.moveRepeat * 2
+  }
+
+  private explode(bomb: Cell) {
+    this.flames.push({ ...bomb, timer: FLAME_TICKS })
+    for (const d of Object.values(DIRS)) {
+      for (let r = 1; r <= this.power.fire; r++) {
+        const x = bomb.x + d.x * r
+        const y = bomb.y + d.y * r
+        const tile = this.grid[y][x]
+        if (tile === Tile.Pillar) break
+        this.flames.push({ x, y, timer: FLAME_TICKS })
+
+        // Reação em cadeia: o fogo acende o pavio de outra bomba no caminho.
+        const other = this.bombAt(x, y)
+        if (other) other.timer = Math.min(other.timer, 1)
+
+        if (tile === Tile.Block) {
+          this.grid[y][x] = Tile.Empty
+          this.score += 10
+          const isDoor = x === this.door.x && y === this.door.y
+          if (!isDoor && this.rand() < ITEM_CHANCE) {
+            const kind = POWER_KINDS[Math.floor(this.rand() * POWER_KINDS.length)]
+            // `safe` protege o item do mesmo fogo que acabou de revelá-lo.
+            this.items.push({ x, y, kind, safe: FLAME_TICKS + 1 })
+          }
+          break
+        }
+      }
+    }
+  }
+
+  private die() {
+    this.lives -= 1
+    // Morrer custa o último power-up pego, sem zerar a progressão toda.
+    const lost = this.taken.pop()
+    if (lost) this.power[lost] -= 1
+    if (this.lives <= 0) this.over = true
+    else this.respawn()
+  }
+
+  tick(held: ReadonlySet<Button>) {
+    if (this.over) return
+    this.ticks += 1
+
+    // Segurar a direção repete o passo, como num direcional de verdade.
+    if (this.moveCooldown > 0) this.moveCooldown -= 1
+    const dir = (['up', 'down', 'left', 'right'] as const).find((b) => held.has(b))
+    if (dir && this.moveCooldown === 0) {
+      this.move(dir)
+      this.moveCooldown = this.moveRepeat
+    }
+
+    // Explode em ondas até não sobrar pavio zerado: assim a cadeia acontece no mesmo tick.
+    let ready = this.bombs.filter((b) => --b.timer <= 0)
+    while (ready.length) {
+      this.bombs = this.bombs.filter((b) => !ready.includes(b))
+      ready.forEach((b) => this.explode(b))
+      ready = this.bombs.filter((b) => b.timer <= 1)
+    }
+    this.flames = this.flames.filter((f) => --f.timer > 0)
+
+    const onFire = (c: Cell) => this.flames.some((f) => f.x === c.x && f.y === c.y)
+    this.items = this.items.filter((i) => (i.safe > 0 ? i.safe-- >= 0 : !onFire(i)))
+    const before = this.enemies.length
+    this.enemies = this.enemies.filter((e) => !onFire(e))
+    this.score += (before - this.enemies.length) * 100
+
+    const enemyStep = Math.max(14, 34 - this.level * 3)
+    if (this.ticks % enemyStep === 0) {
+      for (const e of this.enemies) {
+        const options = Object.values(DIRS).filter((d) => this.walkable(e.x + d.x, e.y + d.y))
+        if (!options.length) continue
+        const keep = options.includes(e.dir) && this.rand() > 0.25
+        e.dir = keep ? e.dir : options[Math.floor(this.rand() * options.length)]
+        e.x += e.dir.x
+        e.y += e.dir.y
+      }
+    }
+
+    const p = this.player
+    if (onFire(p) || this.enemies.some((e) => e.x === p.x && e.y === p.y)) {
+      this.die()
+      return
+    }
+
+    const doorOpen = this.grid[this.door.y][this.door.x] === Tile.Empty
+    if (doorOpen && this.enemies.length === 0 && p.x === this.door.x && p.y === this.door.y) {
+      this.score += 500
+      this.nextLevel()
+    }
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    clearScreen(ctx)
+    const { cell } = MAZE
+    const oy = Math.floor((SCREEN_H - MAZE.rows * cell) / 2)
+    const at = (c: Cell) => [c.x * cell, oy + c.y * cell] as const
+
+    this.grid.forEach((row, y) => row.forEach((tile, x) => {
+      const [px, py] = at({ x, y })
+      if (tile === Tile.Pillar) {
+        ctx.fillStyle = LCD.mid
+        ctx.fillRect(px, py, cell, cell)
+      } else if (tile === Tile.Block) {
+        ctx.fillStyle = LCD.dim
+        ctx.fillRect(px + 1, py + 1, cell - 2, cell - 2)
+        ctx.fillStyle = LCD.mid
+        ctx.fillRect(px + 1, py + cell / 2, cell - 2, 1)
+        ctx.fillRect(px + cell / 2, py + 1, 1, cell / 2)
+      }
+    }))
+
+    if (this.grid[this.door.y][this.door.x] === Tile.Empty) {
+      const [px, py] = at(this.door)
+      ctx.strokeStyle = this.enemies.length ? LCD.mid : LCD.fg
+      ctx.strokeRect(px + 3.5, py + 2.5, cell - 7, cell - 4)
+    }
+
+    // Itens: moldura com um ícone simples por tipo.
+    for (const item of this.items) {
+      const [px, py] = at(item)
+      ctx.strokeStyle = LCD.fg
+      ctx.strokeRect(px + 2.5, py + 2.5, cell - 5, cell - 5)
+      ctx.fillStyle = LCD.fg
+      if (item.kind === 'bomb') {
+        ctx.fillRect(px + 6, py + 6, 5, 5)
+        ctx.fillRect(px + 9, py + 4, 1, 2)
+      } else if (item.kind === 'fire') {
+        ctx.fillRect(px + 7, py + 5, 2, 7)
+        ctx.fillRect(px + 5, py + 8, 6, 2)
+      } else {
+        ctx.fillRect(px + 5, py + 7, 6, 2)
+        ctx.fillRect(px + 9, py + 5, 2, 6)
+      }
+    }
+
+    ctx.fillStyle = LCD.fg
+    for (const f of this.flames) {
+      const [px, py] = at(f)
+      ctx.fillRect(px + 2, py + 2, cell - 4, cell - 4)
+    }
+    for (const bomb of this.bombs) {
+      if (Math.floor(bomb.timer / 8) % 2 !== 0) continue
+      const [px, py] = at(bomb)
+      ctx.fillRect(px + 4, py + 4, cell - 8, cell - 8)
+      ctx.fillRect(px + cell / 2, py + 1, 2, 3)
+    }
+
+    ctx.fillStyle = LCD.mid
+    for (const e of this.enemies) {
+      const [px, py] = at(e)
+      ctx.fillRect(px + 3, py + 4, cell - 6, cell - 6)
+      ctx.fillStyle = LCD.bg
+      ctx.fillRect(px + 5, py + 7, 2, 2)
+      ctx.fillRect(px + cell - 7, py + 7, 2, 2)
+      ctx.fillStyle = LCD.mid
+    }
+
+    const [px, py] = at(this.player)
+    ctx.fillStyle = LCD.fg
+    ctx.fillRect(px + 4, py + 2, cell - 8, 5)
+    ctx.fillRect(px + 3, py + 7, cell - 6, 7)
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Rock Storm                                                          */
+/* ------------------------------------------------------------------ */
+
+const SHIP = { r: 6, turn: 0.09, thrust: 0.09, drag: 0.985, maxSpeed: 3.5 }
+const SHOT = { speed: 4.5, life: 45, max: 4 }
+// Raio e pontos por tamanho de pedra: grandes valem menos, pequenas valem mais.
+const ROCK_SIZES = { 3: { r: 15, points: 20 }, 2: { r: 9, points: 50 }, 1: { r: 5, points: 100 } } as const
+const RESPAWN_SHIELD = 90
+
+type Body = { x: number; y: number; vx: number; vy: number }
+type Rock = Body & { size: 1 | 2 | 3; shape: number[] }
+type Shot = Body & { life: number }
+
+const wrap = (b: Body) => {
+  b.x = (b.x + SCREEN_W) % SCREEN_W
+  b.y = (b.y + SCREEN_H) % SCREEN_H
+}
+const dist = (a: Body, b: Body) => Math.hypot(a.x - b.x, a.y - b.y)
+
+export class RockStorm implements Game {
+  readonly tickMs = 16
+
+  ship = { x: SCREEN_W / 2, y: SCREEN_H / 2, vx: 0, vy: 0, angle: -Math.PI / 2 }
+  rocks: Rock[] = []
+  shots: Shot[] = []
+  shield = RESPAWN_SHIELD
+  thrusting = false
+  wave = 0
+  lives = 3
+  score = 0
+  over = false
+  private readonly rand: Rand
+
+  constructor(rand: Rand = Math.random) {
+    this.rand = rand
+    this.nextWave()
+  }
+
+  stat() {
+    return { label: 'lives' as const, value: this.lives }
+  }
+
+  makeRock(x: number, y: number, size: Rock['size']): Rock {
+    const angle = this.rand() * Math.PI * 2
+    const speed = 0.4 + this.rand() * 0.5 + (3 - size) * 0.25 + this.wave * 0.05
+    // Contorno irregular: 9 vértices com raio entre 75% e 100%.
+    const shape = Array.from({ length: 9 }, () => 0.75 + this.rand() * 0.25)
+    return { x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, size, shape }
+  }
+
+  private nextWave() {
+    this.wave += 1
+    this.rocks = []
+    for (let i = 0; i < Math.min(2 + this.wave, 8); i++) {
+      // Nasce nas bordas, longe da nave.
+      const edge = this.rand() < 0.5
+      const x = edge ? 0 : this.rand() * SCREEN_W
+      const y = edge ? this.rand() * SCREEN_H : 0
+      this.rocks.push(this.makeRock(x, y, 3))
+    }
+  }
+
+  private respawn() {
+    this.ship = { x: SCREEN_W / 2, y: SCREEN_H / 2, vx: 0, vy: 0, angle: -Math.PI / 2 }
+    this.shield = RESPAWN_SHIELD
+  }
+
+  press(button: Button) {
+    if (this.over || button !== 'action' || this.shots.length >= SHOT.max) return
+    const { x, y, vx, vy, angle } = this.ship
+    this.shots.push({
+      x: x + Math.cos(angle) * SHIP.r,
+      y: y + Math.sin(angle) * SHIP.r,
+      vx: vx + Math.cos(angle) * SHOT.speed,
+      vy: vy + Math.sin(angle) * SHOT.speed,
+      life: SHOT.life,
+    })
+  }
+
+  private split(rock: Rock) {
+    this.score += ROCK_SIZES[rock.size].points
+    if (rock.size === 1) return []
+    const size = (rock.size - 1) as Rock['size']
+    return [this.makeRock(rock.x, rock.y, size), this.makeRock(rock.x, rock.y, size)]
+  }
+
+  tick(held: ReadonlySet<Button>) {
+    if (this.over) return
+    const s = this.ship
+    if (held.has('left')) s.angle -= SHIP.turn
+    if (held.has('right')) s.angle += SHIP.turn
+    this.thrusting = held.has('up')
+    if (this.thrusting) {
+      s.vx += Math.cos(s.angle) * SHIP.thrust
+      s.vy += Math.sin(s.angle) * SHIP.thrust
+    }
+    s.vx *= SHIP.drag
+    s.vy *= SHIP.drag
+    const speed = Math.hypot(s.vx, s.vy)
+    if (speed > SHIP.maxSpeed) {
+      s.vx *= SHIP.maxSpeed / speed
+      s.vy *= SHIP.maxSpeed / speed
+    }
+    s.x += s.vx
+    s.y += s.vy
+    wrap(s)
+    if (this.shield > 0) this.shield -= 1
+
+    for (const body of [...this.rocks, ...this.shots]) {
+      body.x += body.vx
+      body.y += body.vy
+      wrap(body)
+    }
+    this.shots = this.shots.filter((shot) => --shot.life > 0)
+
+    // Tiro x pedra: a pedra se divide e o tiro some.
+    const survivors: Rock[] = []
+    for (const rock of this.rocks) {
+      const shot = this.shots.find((sh) => dist(sh, rock) < ROCK_SIZES[rock.size].r)
+      if (shot) {
+        this.shots = this.shots.filter((sh) => sh !== shot)
+        survivors.push(...this.split(rock))
+      } else survivors.push(rock)
+    }
+    this.rocks = survivors
+
+    if (this.shield === 0 && this.rocks.some((rock) => dist(rock, s) < ROCK_SIZES[rock.size].r + SHIP.r - 2)) {
+      this.lives -= 1
+      if (this.lives <= 0) {
+        this.over = true
+        return
+      }
+      this.respawn()
+    }
+
+    if (this.rocks.length === 0) this.nextWave()
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    clearScreen(ctx)
+    ctx.lineWidth = 1
+    ctx.strokeStyle = LCD.mid
+    for (const rock of this.rocks) {
+      const r = ROCK_SIZES[rock.size].r
+      ctx.beginPath()
+      rock.shape.forEach((k, i) => {
+        const a = (i / rock.shape.length) * Math.PI * 2
+        const x = rock.x + Math.cos(a) * r * k
+        const y = rock.y + Math.sin(a) * r * k
+        if (i === 0) ctx.moveTo(x, y)
+        else ctx.lineTo(x, y)
+      })
+      ctx.closePath()
+      ctx.stroke()
+    }
+
+    ctx.fillStyle = LCD.fg
+    for (const shot of this.shots) ctx.fillRect(shot.x - 1, shot.y - 1, 2, 2)
+
+    // Pisca enquanto o escudo de renascimento está ativo.
+    if (this.shield > 0 && Math.floor(this.shield / 6) % 2 === 0) return
+    const { x, y, angle } = this.ship
+    const point = (a: number, r: number) => [x + Math.cos(angle + a) * r, y + Math.sin(angle + a) * r] as const
+    ctx.strokeStyle = LCD.fg
+    ctx.beginPath()
+    ctx.moveTo(...point(0, SHIP.r + 2))
+    ctx.lineTo(...point(2.5, SHIP.r))
+    ctx.lineTo(...point(Math.PI, SHIP.r * 0.4))
+    ctx.lineTo(...point(-2.5, SHIP.r))
+    ctx.closePath()
+    ctx.stroke()
+    if (this.thrusting) {
+      ctx.beginPath()
+      ctx.moveTo(...point(2.8, SHIP.r * 0.7))
+      ctx.lineTo(...point(Math.PI, SHIP.r + 4))
+      ctx.lineTo(...point(-2.8, SHIP.r * 0.7))
+      ctx.stroke()
+    }
+  }
+}
+
 export function createGame(id: GameId, rand: Rand = Math.random): Game {
+  if (id === 'rock-storm') return new RockStorm(rand)
+  if (id === 'blast-maze') return new BlastMaze(rand)
+  if (id === 'wall-smash') return new WallSmash()
   if (id === 'block-tower') return new BlockTower(rand)
   if (id === 'grass-snake') return new GrassSnake(rand)
   if (id === 'sky-hopper') return new SkyHopper(rand)

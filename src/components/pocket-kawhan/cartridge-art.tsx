@@ -99,7 +99,69 @@ function SkyHopperArt() {
   )
 }
 
+function WallSmashArt() {
+  // Muro colorido sendo quebrado, com a bola atravessando e a raquete embaixo.
+  const colors = ['#e5484d', '#f2a541', '#ffd23f', '#3aa64a']
+  const bricks: Px[] = []
+  colors.forEach((fill, r) => {
+    for (let c = 0; c < 6; c++) {
+      if ((r === 2 && c === 3) || (r === 3 && (c === 2 || c === 3))) continue
+      bricks.push([2 + c * 7.5, 3 + r * 4, 6.5, 3, fill])
+    }
+  })
+  return (
+    <>
+      <rect width="48" height="48" fill="#2b1d4f" />
+      {px([
+        ...bricks,
+        [26, 30, 3, 3, '#fff'], [23, 25, 2, 2, '#ffffff66'],
+        [16, 43, 16, 2, '#4cc9f0'],
+      ])}
+      <Title lines={['WALL', 'SMASH']} fill="#4cc9f0" stroke="#160d2e" />
+    </>
+  )
+}
+
+function BlastMazeArt() {
+  // Labirinto visto de cima com uma bomba de pavio aceso no meio da explosão.
+  const pillars: Px[] = []
+  for (let y = 4; y < 36; y += 8) for (let x = 4; x < 48; x += 8) pillars.push([x, y, 4, 4, '#2d4a3a'])
+  return (
+    <>
+      <rect width="48" height="48" fill="#7bbf6a" />
+      {px([
+        ...pillars,
+        [8, 8, 4, 4, '#b07a43'], [32, 16, 4, 4, '#b07a43'], [16, 24, 4, 4, '#b07a43'],
+        [14, 18, 20, 4, '#ffd23f'], [22, 10, 4, 20, '#ffd23f'], [16, 19, 16, 2, '#fff3c4'], [23, 12, 2, 16, '#fff3c4'],
+        [20, 16, 8, 8, '#171717'], [21, 17, 2, 2, '#555'], [26, 13, 1, 3, '#b07a43'], [26, 12, 2, 1, '#e5484d'],
+      ])}
+      <Title lines={['BLAST', 'MAZE']} fill="#ffd23f" stroke="#7a2a12" />
+    </>
+  )
+}
+
+function RockStormArt() {
+  // Espaço profundo, pedras cinzentas e a nave atirando.
+  return (
+    <>
+      <rect width="48" height="48" fill="#0d1b2a" />
+      {px([
+        [3, 4, 1, 1, '#fff'], [40, 6, 1, 1, '#fff'], [20, 2, 1, 1, '#fff'], [44, 40, 1, 1, '#fff'], [6, 42, 1, 1, '#fff'],
+        [4, 28, 10, 8, '#8d99ae'], [6, 26, 6, 2, '#8d99ae'], [6, 36, 7, 2, '#8d99ae'], [7, 30, 2, 2, '#5c677d'],
+        [34, 26, 8, 7, '#8d99ae'], [35, 24, 5, 2, '#8d99ae'], [37, 28, 2, 2, '#5c677d'],
+        [26, 38, 5, 4, '#8d99ae'],
+        [21, 36, 6, 2, '#e0fbfc'], [22, 34, 4, 2, '#e0fbfc'], [23, 32, 2, 2, '#e0fbfc'], [23, 38, 2, 2, '#ff9f1c'],
+        [23, 27, 2, 2, '#ffd23f'], [23, 22, 2, 2, '#ffd23f'],
+      ])}
+      <Title lines={['ROCK', 'STORM']} fill="#e0fbfc" stroke="#3d5a80" />
+    </>
+  )
+}
+
 const ART: Record<GameId, () => React.JSX.Element> = {
+  'rock-storm': RockStormArt,
+  'blast-maze': BlastMazeArt,
+  'wall-smash': WallSmashArt,
   'sky-hopper': SkyHopperArt,
   'block-tower': BlockTowerArt,
   'grass-snake': GrassSnakeArt,

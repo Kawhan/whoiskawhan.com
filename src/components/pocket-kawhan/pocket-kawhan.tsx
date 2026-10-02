@@ -4,14 +4,18 @@ import { cn } from '@/lib/utils'
 import { CartridgeArt } from './cartridge-art'
 import { createGame, SCREEN_H, SCREEN_W, type Button, type Game, type GameId } from './games'
 
-const GAME_IDS: GameId[] = ['block-tower', 'grass-snake', 'star-patrol', 'sky-hopper']
+const GAME_IDS: GameId[] = ['block-tower', 'grass-snake', 'star-patrol', 'sky-hopper', 'wall-smash', 'blast-maze', 'rock-storm']
 
-// Onde cada cartucho "descansa" na mesa em telas md+ (no mobile viram uma fileira).
+// Onde cada cartucho "descansa" na mesa em telas md+ (no mobile viram uma fileira):
+// duas colunas ao lado do console, com leve zigue-zague e inclinação para parecer solto.
 const CART_POSITION: Record<GameId, string> = {
-  'block-tower': 'md:left-[6%] md:top-[16%] md:-rotate-6',
-  'grass-snake': 'md:right-[6%] md:top-[32%] md:rotate-6',
-  'star-patrol': 'md:left-[8%] md:top-[60%] md:-rotate-3',
-  'sky-hopper': 'md:right-[8%] md:top-[66%] md:rotate-3',
+  'block-tower': 'md:left-[4%] md:top-[3%] md:-rotate-6',
+  'blast-maze': 'md:left-[9%] md:top-[27%] md:rotate-3',
+  'star-patrol': 'md:left-[4%] md:top-[51%] md:-rotate-3',
+  'rock-storm': 'md:left-[9%] md:top-[75%] md:rotate-2',
+  'wall-smash': 'md:right-[6%] md:top-[10%] md:rotate-6',
+  'grass-snake': 'md:right-[10%] md:top-[38%] md:-rotate-2',
+  'sky-hopper': 'md:right-[5%] md:top-[66%] md:rotate-3',
 }
 
 const KEY_TO_BUTTON: Record<string, Button> = {
@@ -48,8 +52,8 @@ export function PocketKawhan() {
 
   const [inserted, setInserted] = useState<GameId | null>(null)
   const [status, setStatus] = useState<Status>('idle')
-  const [hud, setHud] = useState<{ score: number; stat: number; best: number; label: ReturnType<Game['stat']>['label'] }>({
-    score: 0, stat: 0, best: 0, label: 'lines',
+  const [hud, setHud] = useState<{ score: number; stat: number; best: number; label: ReturnType<Game['stat']>['label']; badge: string }>({
+    score: 0, stat: 0, best: 0, label: 'lines', badge: '',
   })
 
   const consoleRef = useRef<HTMLDivElement>(null)
@@ -60,8 +64,9 @@ export function PocketKawhan() {
   const syncHud = useCallback((game: Game, id: GameId) => {
     setHud((prev) => {
       const stat = game.stat().value
-      if (prev.score === game.score && prev.stat === stat) return prev
-      return { ...prev, score: game.score, stat, best: Math.max(prev.best, game.score, readBest(id)) }
+      const badge = game.badge?.() ?? ''
+      if (prev.score === game.score && prev.stat === stat && prev.badge === badge) return prev
+      return { ...prev, score: game.score, stat, badge, best: Math.max(prev.best, game.score, readBest(id)) }
     })
   }, [])
 
@@ -75,7 +80,7 @@ export function PocketKawhan() {
     gameRef.current = game
     heldRef.current.clear()
     const { label, value } = game.stat()
-    setHud({ score: 0, stat: value, best: readBest(id), label })
+    setHud({ score: 0, stat: value, best: readBest(id), label, badge: game.badge?.() ?? '' })
     draw()
   }, [draw])
 
@@ -206,6 +211,7 @@ export function PocketKawhan() {
               {game && (
                 <div className="flex justify-between px-2 pb-2 text-[9px] uppercase tracking-[0.08em] text-[#3f7a4d]">
                   <span>{copy.stats[hud.label]} {hud.stat}</span>
+                  {hud.badge && <span>{hud.badge}</span>}
                   <span>{copy.best} {String(hud.best).padStart(5, '0')}</span>
                 </div>
               )}
