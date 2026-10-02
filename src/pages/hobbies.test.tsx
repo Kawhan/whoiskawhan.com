@@ -30,7 +30,7 @@ describe('hobbies page', () => {
     expect(screen.queryByRole('region', { name: /jogando agora/i })).not.toBeInTheDocument()
   })
 
-  it('inserts a cartridge into the Pocket Arcade', () => {
+  it('inserts a cartridge into the Pocket Kawhan', () => {
     render(
       <MemoryRouter initialEntries={['/hobbies']}>
         <I18nProvider>
@@ -42,10 +42,10 @@ describe('hobbies page', () => {
     )
 
     expect(screen.getByText('Escolha um cartucho')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: /encaixar garden snake/i }))
+    fireEvent.click(screen.getByRole('button', { name: /encaixar grass snake/i }))
 
-    expect(screen.getByRole('button', { name: /ejetar garden snake/i })).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /encaixar garden snake/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /ejetar grass snake/i })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /encaixar grass snake/i })).not.toBeInTheDocument()
     expect(screen.getByText(/espaço para jogar/i)).toBeInTheDocument()
   })
 

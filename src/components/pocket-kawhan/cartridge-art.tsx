@@ -27,7 +27,7 @@ function Title({ lines, fill, stroke }: { lines: string[]; fill: string; stroke:
   )
 }
 
-function BrickStackArt() {
+function BlockTowerArt() {
   const blocks: Px[] = []
   // Pilha de tetrominós no rodapé, em tons de cinza.
   const rows = ['##.###.###', '#######.##', '##########']
@@ -42,12 +42,12 @@ function BrickStackArt() {
         [36, 3, 3, 3, '#bdbdbd'], [36, 6, 3, 3, '#bdbdbd'], [39, 6, 3, 3, '#bdbdbd'],
         ...blocks,
       ])}
-      <Title lines={['BRICK', 'STACK']} fill="#e6e6e6" stroke="#2b2b2d" />
+      <Title lines={['BLOCK', 'TOWER']} fill="#e6e6e6" stroke="#2b2b2d" />
     </>
   )
 }
 
-function GardenSnakeArt() {
+function GrassSnakeArt() {
   const snake: Px[] = []
   const path = [[4, 40], [8, 40], [12, 40], [12, 36], [16, 36], [20, 36], [24, 36], [24, 40], [28, 40], [32, 40], [36, 40], [36, 36], [40, 36]]
   path.forEach(([x, y]) => snake.push([x, y, 4, 4, '#e8c12c'], [x + 1, y + 1, 2, 2, '#3f8a2a']))
@@ -60,12 +60,12 @@ function GardenSnakeArt() {
         ...snake,
         [43, 37, 1, 1, '#111'], [44, 38, 2, 1, '#e5484d'],
       ])}
-      <Title lines={['GARDEN', 'SNAKE']} fill="#ffcf3d" stroke="#7a2a12" />
+      <Title lines={['GRASS', 'SNAKE']} fill="#ffcf3d" stroke="#7a2a12" />
     </>
   )
 }
 
-function NightPatrolArt() {
+function StarPatrolArt() {
   const invader = (x: number, y: number, fill: string): Px[] => [
     [x + 1, y, 4, 1, fill], [x, y + 1, 6, 2, fill], [x, y + 3, 1, 1, fill], [x + 5, y + 3, 1, 1, fill],
   ]
@@ -79,7 +79,7 @@ function NightPatrolArt() {
         [22, 37, 4, 3, '#4cc9f0'], [23, 35, 2, 2, '#4cc9f0'], [23, 31, 2, 3, '#f4e9b8'],
         [0, 42, 48, 6, '#2a2f6b'], [6, 40, 4, 2, '#2a2f6b'], [32, 39, 6, 3, '#2a2f6b'],
       ])}
-      <Title lines={['NIGHT', 'PATROL']} fill="#ff4d6d" stroke="#fff3c4" />
+      <Title lines={['STAR', 'PATROL']} fill="#ff4d6d" stroke="#fff3c4" />
     </>
   )
 }
@@ -101,9 +101,9 @@ function SkyHopperArt() {
 
 const ART: Record<GameId, () => React.JSX.Element> = {
   'sky-hopper': SkyHopperArt,
-  'brick-stack': BrickStackArt,
-  'garden-snake': GardenSnakeArt,
-  'night-patrol': NightPatrolArt,
+  'block-tower': BlockTowerArt,
+  'grass-snake': GrassSnakeArt,
+  'star-patrol': StarPatrolArt,
 }
 
 export function CartridgeArt({ id }: { id: GameId }) {

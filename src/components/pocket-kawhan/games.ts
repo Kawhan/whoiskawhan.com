@@ -1,9 +1,9 @@
-// Lógica pura dos três jogos do Pocket Arcade. Nada aqui conhece React:
+// Lógica pura dos jogos do Pocket Kawhan. Nada aqui conhece React:
 // o console chama `tick` no ritmo de `tickMs`, repassa botões via `press`
 // e pede para o jogo se desenhar num canvas de SCREEN_W x SCREEN_H.
 
 export type Button = 'up' | 'down' | 'left' | 'right' | 'action'
-export type GameId = 'brick-stack' | 'garden-snake' | 'night-patrol' | 'sky-hopper'
+export type GameId = 'block-tower' | 'grass-snake' | 'star-patrol' | 'sky-hopper'
 export type Rand = () => number
 
 export const SCREEN_W = 240
@@ -33,7 +33,7 @@ function clearScreen(ctx: CanvasRenderingContext2D) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Brick Stack                                                         */
+/* Block Tower                                                         */
 /* ------------------------------------------------------------------ */
 
 type Matrix = number[][]
@@ -54,11 +54,11 @@ export function rotate(m: Matrix): Matrix {
   return m[0].map((_, col) => m.map((row) => row[col]).reverse())
 }
 
-export class BrickStack implements Game {
+export class BlockTower implements Game {
   static readonly COLS = 10
   static readonly ROWS = 18
 
-  board: number[][] = Array.from({ length: BrickStack.ROWS }, () => Array(BrickStack.COLS).fill(0))
+  board: number[][] = Array.from({ length: BlockTower.ROWS }, () => Array(BlockTower.COLS).fill(0))
   piece: { m: Matrix; x: number; y: number }
   next: Matrix
   score = 0
@@ -87,7 +87,7 @@ export class BrickStack implements Game {
   private spawn() {
     const m = this.next
     this.next = this.randomPiece()
-    const piece = { m, x: Math.floor((BrickStack.COLS - m[0].length) / 2), y: 0 }
+    const piece = { m, x: Math.floor((BlockTower.COLS - m[0].length) / 2), y: 0 }
     if (this.collides(m, piece.x, piece.y)) this.over = true
     return piece
   }
@@ -98,7 +98,7 @@ export class BrickStack implements Game {
         if (!cell) return false
         const bx = x + dx
         const by = y + dy
-        return bx < 0 || bx >= BrickStack.COLS || by >= BrickStack.ROWS || (by >= 0 && this.board[by][bx] !== 0)
+        return bx < 0 || bx >= BlockTower.COLS || by >= BlockTower.ROWS || (by >= 0 && this.board[by][bx] !== 0)
       }),
     )
   }
@@ -109,8 +109,8 @@ export class BrickStack implements Game {
       if (cell && y + dy >= 0) this.board[y + dy][x + dx] = 1
     }))
     const kept = this.board.filter((row) => row.some((c) => c === 0))
-    const cleared = BrickStack.ROWS - kept.length
-    while (kept.length < BrickStack.ROWS) kept.unshift(Array(BrickStack.COLS).fill(0))
+    const cleared = BlockTower.ROWS - kept.length
+    while (kept.length < BlockTower.ROWS) kept.unshift(Array(BlockTower.COLS).fill(0))
     this.board = kept
     this.lines += cleared
     this.score += LINE_POINTS[cleared]
@@ -151,11 +151,11 @@ export class BrickStack implements Game {
   draw(ctx: CanvasRenderingContext2D) {
     clearScreen(ctx)
     const cell = 9
-    const ox = Math.floor((SCREEN_W - BrickStack.COLS * cell) / 2)
-    const oy = Math.floor((SCREEN_H - BrickStack.ROWS * cell) / 2)
+    const ox = Math.floor((SCREEN_W - BlockTower.COLS * cell) / 2)
+    const oy = Math.floor((SCREEN_H - BlockTower.ROWS * cell) / 2)
     ctx.strokeStyle = LCD.mid
     ctx.lineWidth = 1
-    ctx.strokeRect(ox - 2.5, oy - 2.5, BrickStack.COLS * cell + 4, BrickStack.ROWS * cell + 4)
+    ctx.strokeRect(ox - 2.5, oy - 2.5, BlockTower.COLS * cell + 4, BlockTower.ROWS * cell + 4)
 
     const block = (bx: number, by: number, color: string, x0 = ox, y0 = oy) => {
       ctx.fillStyle = color
@@ -168,13 +168,13 @@ export class BrickStack implements Game {
       m.forEach((row, dy) => row.forEach((c, dx) => c && y + dy >= 0 && block(x + dx, y + dy, LCD.fg)))
     }
 
-    const nx = ox + BrickStack.COLS * cell + 18
+    const nx = ox + BlockTower.COLS * cell + 18
     this.next.forEach((row, dy) => row.forEach((c, dx) => c && block(dx, dy, LCD.mid, nx, oy + 12)))
   }
 }
 
 /* ------------------------------------------------------------------ */
-/* Garden Snake                                                        */
+/* Grass Snake                                                         */
 /* ------------------------------------------------------------------ */
 
 type Point = { x: number; y: number }
@@ -186,7 +186,7 @@ const DIRS: Record<Exclude<Button, 'action'>, Point> = {
   right: { x: 1, y: 0 },
 }
 
-export class GardenSnake implements Game {
+export class GrassSnake implements Game {
   static readonly COLS = 24
   static readonly ROWS = 18
 
@@ -213,8 +213,8 @@ export class GardenSnake implements Game {
 
   private placeFood(): Point {
     const free: Point[] = []
-    for (let y = 0; y < GardenSnake.ROWS; y++) {
-      for (let x = 0; x < GardenSnake.COLS; x++) {
+    for (let y = 0; y < GrassSnake.ROWS; y++) {
+      for (let x = 0; x < GrassSnake.COLS; x++) {
         if (!this.body.some((p) => p.x === x && p.y === y)) free.push({ x, y })
       }
     }
@@ -237,7 +237,7 @@ export class GardenSnake implements Game {
     const head = { x: this.body[0].x + this.dir.x, y: this.body[0].y + this.dir.y }
     const eats = head.x === this.food.x && head.y === this.food.y
     const body = eats ? this.body : this.body.slice(0, -1)
-    const hitsWall = head.x < 0 || head.y < 0 || head.x >= GardenSnake.COLS || head.y >= GardenSnake.ROWS
+    const hitsWall = head.x < 0 || head.y < 0 || head.x >= GrassSnake.COLS || head.y >= GrassSnake.ROWS
     if (hitsWall || body.some((p) => p.x === head.x && p.y === head.y)) {
       this.over = true
       return
@@ -252,10 +252,10 @@ export class GardenSnake implements Game {
   draw(ctx: CanvasRenderingContext2D) {
     clearScreen(ctx)
     const cell = 9
-    const ox = Math.floor((SCREEN_W - GardenSnake.COLS * cell) / 2)
-    const oy = Math.floor((SCREEN_H - GardenSnake.ROWS * cell) / 2)
+    const ox = Math.floor((SCREEN_W - GrassSnake.COLS * cell) / 2)
+    const oy = Math.floor((SCREEN_H - GrassSnake.ROWS * cell) / 2)
     ctx.strokeStyle = LCD.mid
-    ctx.strokeRect(ox - 2.5, oy - 2.5, GardenSnake.COLS * cell + 4, GardenSnake.ROWS * cell + 4)
+    ctx.strokeRect(ox - 2.5, oy - 2.5, GrassSnake.COLS * cell + 4, GrassSnake.ROWS * cell + 4)
 
     ctx.fillStyle = LCD.fg
     ctx.fillRect(ox + this.food.x * cell + 2, oy + this.food.y * cell + 2, cell - 4, cell - 4)
@@ -267,7 +267,7 @@ export class GardenSnake implements Game {
 }
 
 /* ------------------------------------------------------------------ */
-/* Night Patrol                                                        */
+/* Star Patrol                                                         */
 /* ------------------------------------------------------------------ */
 
 type Box = { x: number; y: number; w: number; h: number }
@@ -277,7 +277,7 @@ const hit = (a: Box, b: Box) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y 
 const ALIEN = { w: 12, h: 8, gapX: 20, gapY: 14, cols: 8, rows: 4 }
 const PLAYER = { w: 14, h: 6, y: SCREEN_H - 14 }
 
-export class NightPatrol implements Game {
+export class StarPatrol implements Game {
   readonly tickMs = 30
 
   playerX = SCREEN_W / 2 - PLAYER.w / 2
@@ -479,8 +479,8 @@ export class SkyHopper implements Game {
 }
 
 export function createGame(id: GameId, rand: Rand = Math.random): Game {
-  if (id === 'brick-stack') return new BrickStack(rand)
-  if (id === 'garden-snake') return new GardenSnake(rand)
+  if (id === 'block-tower') return new BlockTower(rand)
+  if (id === 'grass-snake') return new GrassSnake(rand)
   if (id === 'sky-hopper') return new SkyHopper(rand)
-  return new NightPatrol(rand)
+  return new StarPatrol(rand)
 }

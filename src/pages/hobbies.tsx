@@ -1,5 +1,5 @@
 import { SEO } from '@/components/seo'
-import { PocketArcade } from '@/components/pocket-arcade/pocket-arcade'
+import { PocketKawhan } from '@/components/pocket-kawhan/pocket-kawhan'
 import { useI18n } from '@/lib/i18n'
 import { Gamepad2, Library, Users } from 'lucide-react'
 
@@ -45,7 +45,7 @@ export default function Hobbies() {
         </article>
       </section>
 
-      <PocketArcade />
+      <PocketKawhan />
     </div>
   )
 }

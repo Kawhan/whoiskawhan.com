@@ -4,13 +4,13 @@ import { cn } from '@/lib/utils'
 import { CartridgeArt } from './cartridge-art'
 import { createGame, SCREEN_H, SCREEN_W, type Button, type Game, type GameId } from './games'
 
-const GAME_IDS: GameId[] = ['brick-stack', 'garden-snake', 'night-patrol', 'sky-hopper']
+const GAME_IDS: GameId[] = ['block-tower', 'grass-snake', 'star-patrol', 'sky-hopper']
 
 // Onde cada cartucho "descansa" na mesa em telas md+ (no mobile viram uma fileira).
 const CART_POSITION: Record<GameId, string> = {
-  'brick-stack': 'md:left-[6%] md:top-[16%] md:-rotate-6',
-  'garden-snake': 'md:right-[6%] md:top-[32%] md:rotate-6',
-  'night-patrol': 'md:left-[8%] md:top-[60%] md:-rotate-3',
+  'block-tower': 'md:left-[6%] md:top-[16%] md:-rotate-6',
+  'grass-snake': 'md:right-[6%] md:top-[32%] md:rotate-6',
+  'star-patrol': 'md:left-[8%] md:top-[60%] md:-rotate-3',
   'sky-hopper': 'md:right-[8%] md:top-[66%] md:rotate-3',
 }
 
@@ -24,7 +24,7 @@ const KEY_TO_BUTTON: Record<string, Button> = {
 
 type Status = 'idle' | 'running' | 'over'
 
-const bestKey = (id: GameId) => `pocket-arcade:best:${id}`
+const bestKey = (id: GameId) => `pocket-kawhan:best:${id}`
 
 function readBest(id: GameId) {
   try {
@@ -42,7 +42,7 @@ function writeBest(id: GameId, score: number) {
   }
 }
 
-export function PocketArcade() {
+export function PocketKawhan() {
   const { messages } = useI18n()
   const copy = messages.hobbies.arcade
 
@@ -154,9 +154,9 @@ export function PocketArcade() {
   const loose = GAME_IDS.filter((id) => id !== inserted)
 
   return (
-    <section aria-labelledby="pocket-arcade-title" className="py-10">
+    <section aria-labelledby="pocket-kawhan-title" className="py-10">
       <p className="font-mono text-xs font-bold uppercase tracking-[0.095em] text-[#1a1a1a]">{copy.kicker}</p>
-      <h2 id="pocket-arcade-title" className="my-3 text-3xl font-extrabold leading-tight tracking-[-0.04em] md:text-5xl">
+      <h2 id="pocket-kawhan-title" className="my-3 text-3xl font-extrabold leading-tight tracking-[-0.04em] md:text-5xl">
         {copy.title}
       </h2>
       <p className="max-w-[640px] font-serif text-lg leading-7">{copy.description}</p>
@@ -173,17 +173,17 @@ export function PocketArcade() {
           onBlur={() => heldRef.current.clear()}
           // Segurar um botão no celular não pode abrir seleção de texto nem menu de contexto.
           onContextMenu={(e) => e.preventDefault()}
-          className="relative mt-6 touch-manipulation select-none [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [-webkit-user-select:none] w-full max-w-[300px] rounded-[28px] bg-[#2a2c31] p-4 pb-6 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.55),inset_0_2px_0_rgba(255,255,255,0.08)] outline-none focus-visible:ring-4 focus-visible:ring-[#e8542f]/60"
+          className="relative mt-6 touch-manipulation select-none [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [-webkit-user-select:none] w-full max-w-[300px] rounded-[28px] bg-[#1f2a44] p-4 pb-6 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.55),inset_0_2px_0_rgba(255,255,255,0.08)] outline-none focus-visible:ring-4 focus-visible:ring-[#263CFF]/60"
         >
           {/* Slot de cartucho */}
-          <div className="absolute -top-6 left-1/2 h-8 w-24 -translate-x-1/2 rounded-t-lg bg-[#1d1f23]">
+          <div className="absolute -top-6 left-1/2 h-8 w-24 -translate-x-1/2 rounded-t-lg bg-[#151d31]">
             {inserted && (
               <button
                 type="button"
                 onClick={eject}
                 aria-label={`${copy.eject} ${copy.games[inserted].name}`}
                 title={copy.eject}
-                className="pocket-arcade-insert absolute inset-x-2 -top-3 h-9 overflow-hidden rounded-t-md border-2 border-b-0 border-[#1d1f23] bg-[#2a2c31]"
+                className="pocket-kawhan-insert absolute inset-x-2 -top-3 h-9 overflow-hidden rounded-t-md border-2 border-b-0 border-[#151d31] bg-[#1f2a44]"
               >
                 <CartridgeArt id={inserted} />
               </button>
@@ -191,10 +191,10 @@ export function PocketArcade() {
           </div>
 
           {/* Tela */}
-          <div className="rounded-2xl bg-[#1a1b1f] p-3 shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)]">
+          <div className="rounded-2xl bg-[#121a2c] p-3 shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)]">
             <div className="relative overflow-hidden rounded-md bg-[#0b120d] font-mono text-[#8fe09c]">
               <div className="flex items-center justify-between px-2 pt-2 text-[10px] font-bold uppercase tracking-[0.08em]">
-                <span>{game ? game.name : 'Pocket Arcade'}</span>
+                <span>{game ? game.name : 'Pocket Kawhan'}</span>
                 <span aria-live="off">{String(hud.score).padStart(5, '0')}</span>
               </div>
               <canvas
@@ -232,11 +232,11 @@ export function PocketArcade() {
             </div>
           </div>
 
-          <div className="mt-3 flex items-baseline justify-between px-1 font-mono text-[#8a8d94]">
-            <span className="text-[11px] font-bold italic tracking-[0.04em] text-[#d6d8dc]">
-              POCKET <span className="text-[8px] not-italic tracking-[0.15em]">ARCADE</span>
+          <div className="mt-3 flex items-baseline justify-between px-1 font-mono text-[#8f9cbc]">
+            <span className="text-[11px] font-bold italic tracking-[0.04em] text-[#e4e9f5]">
+              POCKET <span className="text-[8px] not-italic tracking-[0.15em]">KAWHAN</span>
             </span>
-            <span className="text-[8px] tracking-[0.15em]">PA-03</span>
+            <span className="text-[8px] tracking-[0.15em]">PK-01</span>
           </div>
 
           {/* Controles */}
@@ -250,7 +250,7 @@ export function PocketArcade() {
               ] as const).map(([button, label, place]) => (
                 <PadButton key={button} label={label} className={place} onHold={() => hold(button)} onRelease={() => release(button)} />
               ))}
-              <span className="col-start-2 row-start-2 size-9 bg-[#202226]" />
+              <span className="col-start-2 row-start-2 size-9 bg-[#1a2440]" />
             </div>
             <button
               type="button"
@@ -258,16 +258,16 @@ export function PocketArcade() {
               onPointerDown={(e) => { e.preventDefault(); hold('action') }}
               onPointerUp={() => release('action')}
               onPointerLeave={() => release('action')}
-              className="flex size-14 touch-none items-center justify-center rounded-2xl bg-[#e8542f] shadow-[0_5px_0_#9c3418,inset_0_2px_0_rgba(255,255,255,0.25)] transition-transform active:translate-y-1 active:shadow-[0_1px_0_#9c3418]"
+              className="flex size-14 touch-none items-center justify-center rounded-2xl bg-[#263CFF] shadow-[0_5px_0_#1424a8,inset_0_2px_0_rgba(255,255,255,0.25)] transition-transform active:translate-y-1 active:shadow-[0_1px_0_#1424a8]"
             >
-              <span className="h-1 w-5 rounded-full bg-[#fbd2c4]" />
+              <span className="h-1 w-5 rounded-full bg-[#c9d0ff]" />
             </button>
           </div>
 
           <div className="mt-6 flex items-center justify-between px-1">
-            <span className="font-mono text-[7px] tracking-[0.2em] text-[#6c6f76]">WHOISKAWHAN</span>
+            <span className="font-mono text-[7px] tracking-[0.2em] text-[#6d7a99]">WHOISKAWHAN</span>
             <span className="grid grid-cols-6 gap-1" aria-hidden="true">
-              {Array.from({ length: 12 }, (_, i) => <span key={i} className="size-1 rounded-full bg-[#17181b]" />)}
+              {Array.from({ length: 12 }, (_, i) => <span key={i} className="size-1 rounded-full bg-[#0f1626]" />)}
             </span>
           </div>
         </div>
@@ -280,7 +280,7 @@ export function PocketArcade() {
                 type="button"
                 onClick={() => insert(id)}
                 aria-label={`${copy.insert} ${copy.games[id].name}`}
-                className="group block w-24 rounded-xl bg-[#2a2c31] p-1.5 pb-4 shadow-[0_14px_24px_-10px_rgba(0,0,0,0.6)] transition-transform hover:-translate-y-1 hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#e8542f]/60 md:w-28"
+                className="group block w-24 rounded-xl bg-[#1f2a44] p-1.5 pb-4 shadow-[0_14px_24px_-10px_rgba(0,0,0,0.6)] transition-transform hover:-translate-y-1 hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#263CFF]/60 md:w-28"
               >
                 <span className="block overflow-hidden rounded-md">
                   <CartridgeArt id={id} />
@@ -311,7 +311,7 @@ function PadButton({ label, className, onHold, onRelease }: {
       onPointerUp={onRelease}
       onPointerLeave={onRelease}
       className={cn(
-        'flex size-9 touch-none items-center justify-center rounded-md bg-[#33363c] font-mono text-[11px] font-bold text-[#c9ccd2] shadow-[0_3px_0_#17181b] active:translate-y-0.5 active:shadow-none',
+        'flex size-9 touch-none items-center justify-center rounded-md bg-[#2b3a5c] font-mono text-[11px] font-bold text-[#d3dbef] shadow-[0_3px_0_#0f1626] active:translate-y-0.5 active:shadow-none',
         className,
       )}
     >
