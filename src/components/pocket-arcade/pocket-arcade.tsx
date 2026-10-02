@@ -171,7 +171,9 @@ export function PocketArcade() {
           onKeyDown={onKeyDown}
           onKeyUp={onKeyUp}
           onBlur={() => heldRef.current.clear()}
-          className="relative mt-6 w-full max-w-[300px] rounded-[28px] bg-[#2a2c31] p-4 pb-6 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.55),inset_0_2px_0_rgba(255,255,255,0.08)] outline-none focus-visible:ring-4 focus-visible:ring-[#e8542f]/60"
+          // Segurar um botão no celular não pode abrir seleção de texto nem menu de contexto.
+          onContextMenu={(e) => e.preventDefault()}
+          className="relative mt-6 touch-manipulation select-none [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [-webkit-user-select:none] w-full max-w-[300px] rounded-[28px] bg-[#2a2c31] p-4 pb-6 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.55),inset_0_2px_0_rgba(255,255,255,0.08)] outline-none focus-visible:ring-4 focus-visible:ring-[#e8542f]/60"
         >
           {/* Slot de cartucho */}
           <div className="absolute -top-6 left-1/2 h-8 w-24 -translate-x-1/2 rounded-t-lg bg-[#1d1f23]">
@@ -256,7 +258,7 @@ export function PocketArcade() {
               onPointerDown={(e) => { e.preventDefault(); hold('action') }}
               onPointerUp={() => release('action')}
               onPointerLeave={() => release('action')}
-              className="flex size-14 items-center justify-center rounded-2xl bg-[#e8542f] shadow-[0_5px_0_#9c3418,inset_0_2px_0_rgba(255,255,255,0.25)] transition-transform active:translate-y-1 active:shadow-[0_1px_0_#9c3418]"
+              className="flex size-14 touch-none items-center justify-center rounded-2xl bg-[#e8542f] shadow-[0_5px_0_#9c3418,inset_0_2px_0_rgba(255,255,255,0.25)] transition-transform active:translate-y-1 active:shadow-[0_1px_0_#9c3418]"
             >
               <span className="h-1 w-5 rounded-full bg-[#fbd2c4]" />
             </button>
@@ -309,7 +311,7 @@ function PadButton({ label, className, onHold, onRelease }: {
       onPointerUp={onRelease}
       onPointerLeave={onRelease}
       className={cn(
-        'flex size-9 items-center justify-center rounded-md bg-[#33363c] font-mono text-[11px] font-bold text-[#c9ccd2] shadow-[0_3px_0_#17181b] active:translate-y-0.5 active:shadow-none',
+        'flex size-9 touch-none items-center justify-center rounded-md bg-[#33363c] font-mono text-[11px] font-bold text-[#c9ccd2] shadow-[0_3px_0_#17181b] active:translate-y-0.5 active:shadow-none',
         className,
       )}
     >
