@@ -48,7 +48,9 @@ export function PocketArcade() {
 
   const [inserted, setInserted] = useState<GameId | null>(null)
   const [status, setStatus] = useState<Status>('idle')
-  const [hud, setHud] = useState({ score: 0, stat: 0, best: 0 })
+  const [hud, setHud] = useState<{ score: number; stat: number; best: number; label: ReturnType<Game['stat']>['label'] }>({
+    score: 0, stat: 0, best: 0, label: 'lines',
+  })
 
   const consoleRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -59,7 +61,7 @@ export function PocketArcade() {
     setHud((prev) => {
       const stat = game.stat().value
       if (prev.score === game.score && prev.stat === stat) return prev
-      return { score: game.score, stat, best: Math.max(prev.best, game.score, readBest(id)) }
+      return { ...prev, score: game.score, stat, best: Math.max(prev.best, game.score, readBest(id)) }
     })
   }, [])
 
@@ -72,7 +74,8 @@ export function PocketArcade() {
     const game = createGame(id)
     gameRef.current = game
     heldRef.current.clear()
-    setHud({ score: 0, stat: game.stat().value, best: readBest(id) })
+    const { label, value } = game.stat()
+    setHud({ score: 0, stat: value, best: readBest(id), label })
     draw()
   }, [draw])
 
@@ -200,7 +203,7 @@ export function PocketArcade() {
               />
               {game && (
                 <div className="flex justify-between px-2 pb-2 text-[9px] uppercase tracking-[0.08em] text-[#3f7a4d]">
-                  <span>{copy.stats[gameRef.current?.stat().label ?? 'lines']} {hud.stat}</span>
+                  <span>{copy.stats[hud.label]} {hud.stat}</span>
                   <span>{copy.best} {String(hud.best).padStart(5, '0')}</span>
                 </div>
               )}
