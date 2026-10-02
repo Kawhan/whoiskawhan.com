@@ -8,26 +8,42 @@ Important notes:
 
 - The site is content-first and editorial in tone, not a SaaS product or API platform.
 - Most core pages are available in pt-BR and under `/en/` in English.
-- Blog posts are localized in pt-BR and English when translations exist.
-- TIL content currently exists on the pt-BR route set; `/en/til` is not a published section.
-- There are no public markdown mirrors of pages yet; use the curated links below.
+- Blog posts and TIL notes are localized in pt-BR and English when translations exist.
+- Every page is prerendered to static HTML, so content is readable without running JavaScript.
+- There are no public markdown mirrors of pages yet; use the curated links below or the sitemap.
 
 ## Primary pages
 
 - [Home](https://whoiskawhan.com/): Site entry point with author positioning, recent writing, and open source highlights.
-- [About](https://whoiskawhan.com/about): Biography, career timeline, technical background, certifications, and side project context.
-- [Portfolio](https://whoiskawhan.com/portfolio): Main areas of work, including payments, frontend systems, and runtime/operations.
+- [About](https://whoiskawhan.com/about): Biography, career timeline, technical background, and side project context.
+- [Certificates](https://whoiskawhan.com/certificates): Professional certifications and verified badges.
+- [Portfolio](https://whoiskawhan.com/portfolio): Main areas of work, including payments, frontend systems, and runtime/operations, plus open source projects.
 - [Blog](https://whoiskawhan.com/blog): Long-form technical writing about software architecture, frontend, operations, payments, and engineering decisions.
 - [TIL](https://whoiskawhan.com/til): Short learning notes and technical observations.
 - [Books](https://whoiskawhan.com/books): Curated engineering and adjacent reading recommendations.
-- [Hobbies](https://whoiskawhan.com/hobbies): Personal interests outside day-to-day engineering work.
+- [Hobbies](https://whoiskawhan.com/hobbies): Personal interests outside engineering (games, manga, anime, tabletop RPG) and Pocket Kawhan, a playable handheld console with seven small browser games built from scratch for the site.
+
+## Project pages
+
+Each open source project has a detail page with overview, concept, features, stack, and links to the repository. English versions live under `/en/projects/`.
+
+- [Sales Project](https://whoiskawhan.com/projects/salesProject): .NET sales API with DDD, CQRS via MediatR, and domain events published to RabbitMQ.
+- [Good Hamburger](https://whoiskawhan.com/projects/goodHamburger): .NET ordering API for a burger joint that detects combos and applies the best discount; EF Core, PostgreSQL, tested rules.
+- [Opportunity Microservices](https://whoiskawhan.com/projects/springMicroservices): Opportunity split into Spring Boot microservices with Eureka discovery and an authenticating gateway.
+- [Opportunity](https://whoiskawhan.com/projects/opportunity): Job board for UFPB Campus IV with institutional sign-in and interest charts; Django, PostgreSQL, JWT, Docker.
+- [libft](https://whoiskawhan.com/projects/libft): Reimplementation of the C standard library, built at 42 São Paulo.
+- [NLW Journey API](https://whoiskawhan.com/projects/journeyApi): .NET API written with DDD, Entity Framework, FluentValidation, and Swagger.
+- [Pokédex Angular](https://whoiskawhan.com/projects/pokedexAngular): Angular Pokédex backed by the PokéAPI, organized by domain.
+- [Controle de Contatos](https://whoiskawhan.com/projects/controleContatos): ASP.NET MVC CRUD with authentication, per-level permissions, and SMTP password recovery.
 
 ## English entry points
 
 - [English home](https://whoiskawhan.com/en/): Main English landing page.
 - [English about](https://whoiskawhan.com/en/about): English version of the about page.
+- [English certificates](https://whoiskawhan.com/en/certificates): English version of the certificates page.
 - [English portfolio](https://whoiskawhan.com/en/portfolio): English version of the portfolio page.
 - [English blog](https://whoiskawhan.com/en/blog): English blog index.
+- [English TIL](https://whoiskawhan.com/en/til): English TIL index.
 - [English books](https://whoiskawhan.com/en/books): English books page.
 - [English hobbies](https://whoiskawhan.com/en/hobbies): English hobbies page.
 
@@ -35,14 +51,16 @@ Important notes:
 
 - The author writes in an editorial, direct, anti-corporate tone focused on real-world software engineering.
 - Topics commonly include architecture, frontend systems, APIs, payments, DevOps, operational reliability, and open source.
-- The portfolio is not a project catalog for this website itself; it describes professional areas of expertise and delivery.
+- The portfolio describes professional areas of expertise and delivery; individual open source projects are detailed on the project pages above.
 - The site is personal but professionally relevant: useful for understanding the author's background, interests, writing, and technical positioning.
 - For current updates, prefer the homepage, blog index, and about page.
 
 ## Feeds and machine-useful resources
 
-- [Blog RSS](https://whoiskawhan.com/rss/blog.xml): Syndication feed for blog posts.
+- [Blog RSS](https://whoiskawhan.com/rss/blog.xml): Syndication feed for blog posts (pt-BR).
+- [Blog RSS (English)](https://whoiskawhan.com/rss/blog-en.xml): Syndication feed for English blog posts.
 - [TIL RSS](https://whoiskawhan.com/rss/til.xml): Syndication feed for short learning notes.
+- [Sitemap](https://whoiskawhan.com/sitemap.xml): Complete list of public URLs in both languages.
 - [robots.txt](https://whoiskawhan.com/robots.txt): Crawl guidance and sitemap reference.
 - [security.txt](https://whoiskawhan.com/.well-known/security.txt): Security contact and disclosure channel.
 
