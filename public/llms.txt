@@ -21,7 +21,7 @@ Important notes:
 - [Blog](https://whoiskawhan.com/blog): Long-form technical writing about software architecture, frontend, operations, payments, and engineering decisions.
 - [TIL](https://whoiskawhan.com/til): Short learning notes and technical observations.
 - [Books](https://whoiskawhan.com/books): Curated engineering and adjacent reading recommendations.
-- [Hobbies](https://whoiskawhan.com/hobbies): Personal interests outside engineering (games, manga, anime, tabletop RPG) and Pocket Kawhan, a playable handheld console with seven small browser games built from scratch for the site.
+- [Hobbies](https://whoiskawhan.com/hobbies): Personal interests outside engineering (games, manga, anime, tabletop RPG) and Pocket Kawhan, a playable handheld console with seven small browser games built from scratch for the site, and Bandoletes, a living colony of digital creatures inspired by the Thronglets from Black Mirror ("Plaything") that eat, flock, breed, and pass inherited traits down through generations.
 
 ## Project pages
 

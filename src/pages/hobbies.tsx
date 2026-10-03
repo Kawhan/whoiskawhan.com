@@ -1,4 +1,5 @@
 import { SEO } from '@/components/seo'
+import { Bandoletes } from '@/components/bandoletes/bandoletes'
 import { PocketKawhan } from '@/components/pocket-kawhan/pocket-kawhan'
 import { useI18n } from '@/lib/i18n'
 import { Gamepad2, Library, Users } from 'lucide-react'
@@ -46,6 +47,7 @@ export default function Hobbies() {
       </section>
 
       <PocketKawhan />
+      <Bandoletes />
     </div>
   )
 }
