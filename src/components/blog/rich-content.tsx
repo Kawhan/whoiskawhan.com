@@ -28,6 +28,17 @@ export function RichContent({ blocks }: RichContentProps) {
             </ul>
           )
         }
+        if (block.type === 'image') {
+          // Uma versão "<nome>.dark.svg" ao lado do arquivo é usada no tema escuro.
+          const darkSrc = block.src.replace(/\.svg$/, '.dark.svg')
+          const hasDark = darkSrc !== block.src
+          return (
+            <figure key={index} className="mb-8 mt-2">
+              <img src={block.src} alt={block.alt} loading="lazy" className={`h-auto w-full ${hasDark ? 'dark:hidden' : ''}`} />
+              {hasDark && <img src={darkSrc} alt={block.alt} loading="lazy" className="hidden h-auto w-full dark:block" />}
+            </figure>
+          )
+        }
         return <CodeBlock key={index} language={block.language} code={block.code} />
       })}
     </div>

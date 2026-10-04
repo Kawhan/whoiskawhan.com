@@ -29,16 +29,7 @@ Quando o app envia o pagamento para o servidor, três coisas podem acontecer:
 
 O problema é que, do ponto de vista do app, os dois primeiros casos são idênticos: ele só vê um erro. Ele não tem como saber se a cobrança aconteceu ou não.
 
-```text
-App                       Servidor
- |  --- POST /pagamentos --->  |
- |                             |  cobra R$ 300 ✅
- |  <--- 201 Created ----  ✗   |  (resposta se perdeu)
- |                             |
- |  "Erro de conexão"          |
- |  --- POST /pagamentos --->  |
- |                             |  cobra R$ 300 de novo ❌
-```
+![Sem chave de idempotência: a resposta se perde, o app tenta de novo e o servidor cobra R$ 300 duas vezes](/diagrams/idempotency-keys/sem-chave.pt-BR.svg)
 
 Tentar de novo (o famoso retry) é a coisa certa a fazer quando a rede falha. Mas, sem cuidado, a nova tentativa vira cobrança duplicada.
 
@@ -81,16 +72,7 @@ A chave costuma ser um UUID gerado no momento em que o usuário decide pagar. O 
 
 Com isso, aquele diagrama de antes fica assim:
 
-```text
-App                                Servidor
- |  --- POST (chave: 8f14...) --->  |
- |                                  |  cobra R$ 300 ✅, guarda resposta
- |  <--- 201 Created --------  ✗    |  (resposta se perdeu)
- |                                  |
- |  --- POST (chave: 8f14...) --->  |
- |                                  |  "já vi essa chave!"
- |  <--- 201 Created (a mesma) ---  |  não cobra de novo ✅
-```
+![Com chave de idempotência: na nova tentativa o servidor reconhece a chave, não cobra de novo e devolve a resposta salva](/diagrams/idempotency-keys/com-chave.pt-BR.svg)
 
 O usuário é cobrado uma vez só, e o app recebe a resposta que tinha perdido.
 

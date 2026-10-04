@@ -29,16 +29,7 @@ When the app sends the payment to the server, three things can happen:
 
 The problem is that, from the app's point of view, the first two cases look identical: all it sees is an error. It has no way of knowing whether the charge happened.
 
-```text
-App                       Server
- |  --- POST /payments --->    |
- |                             |  charges $60 ✅
- |  <--- 201 Created ----  ✗   |  (response lost)
- |                             |
- |  "Connection error"         |
- |  --- POST /payments --->    |
- |                             |  charges $60 again ❌
-```
+![Without an idempotency key: the response is lost, the app retries and the server charges $60 twice](/diagrams/idempotency-keys/sem-chave.en.svg)
 
 Trying again (the famous retry) is the right thing to do when the network fails. But without care, a retry becomes a duplicate charge.
 
@@ -81,16 +72,7 @@ The key is usually a UUID generated when the user decides to pay. The crucial pa
 
 With that, the earlier diagram becomes:
 
-```text
-App                                Server
- |  --- POST (key: 8f14...) --->    |
- |                                  |  charges $60 ✅, stores response
- |  <--- 201 Created --------  ✗    |  (response lost)
- |                                  |
- |  --- POST (key: 8f14...) --->    |
- |                                  |  "I've seen this key!"
- |  <--- 201 Created (same one) --  |  no second charge ✅
-```
+![With an idempotency key: on retry the server recognizes the key, skips the charge and returns the stored response](/diagrams/idempotency-keys/com-chave.en.svg)
 
 The user is charged only once, and the app gets the response it had lost.
 

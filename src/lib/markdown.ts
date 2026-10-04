@@ -2,7 +2,8 @@ export type MarkdownBlock =
   | { type: "paragraph"; text: string }
   | { type: "heading"; text: string }
   | { type: "list"; items: string[] }
-  | { type: "code"; language: string; code: string };
+  | { type: "code"; language: string; code: string }
+  | { type: "image"; alt: string; src: string };
 
 export type TableOfContentsItem = {
   id: string;
@@ -60,6 +61,13 @@ export function parseMarkdownBlocks(markdown: string): MarkdownBlock[] {
     if (trimmed.startsWith("## ")) {
       pushParagraph(blocks, paragraphLines);
       blocks.push({ type: "heading", text: trimmed.replace(/^##\s+/, "") });
+      continue;
+    }
+
+    const image = trimmed.match(/^!\[([^\]]*)\]\(([^)\s]+)\)$/);
+    if (image) {
+      pushParagraph(blocks, paragraphLines);
+      blocks.push({ type: "image", alt: image[1], src: image[2] });
       continue;
     }
 
