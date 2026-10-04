@@ -19,10 +19,10 @@ export function GiscusComments() {
     script.src = 'https://giscus.app/client.js'
     script.async = true
     script.crossOrigin = 'anonymous'
-    script.setAttribute('data-repo', 'kawhan/whoiskawhan.com')
-    script.setAttribute('data-repo-id', 'R_kgDOLkjfCg')
+    script.setAttribute('data-repo', 'Kawhan/whoiskawhan.com')
+    script.setAttribute('data-repo-id', 'R_kgDOUt8JnQ')
     script.setAttribute('data-category', 'Announcements')
-    script.setAttribute('data-category-id', 'DIC_kwDOLkjfCs4CeMff')
+    script.setAttribute('data-category-id', 'DIC_kwDOUt8Jnc4DHC_s')
     script.setAttribute('data-mapping', 'pathname')
     script.setAttribute('data-strict', '0')
     script.setAttribute('data-reactions-enabled', '1')

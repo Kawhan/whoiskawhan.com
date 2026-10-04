@@ -10,7 +10,7 @@ export const authors: Record<string, Author> = {
     username: 'kawhan',
     name: 'Kawhan Laurindo de Lima',
     avatar: '/profile/kawhan.jpg',
-    bio: 'Engenheiro de software com foco em back-end .NET, sistemas industriais e arquitetura orientada a eventos.',
+    bio: 'Engenheiro de software',
   },
 }
 

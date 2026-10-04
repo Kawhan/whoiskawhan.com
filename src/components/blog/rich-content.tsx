@@ -16,7 +16,7 @@ export function RichContent({ blocks }: RichContentProps) {
   return (
     <div className="min-w-0 max-w-full break-words font-serif text-lg leading-8 text-ink">
       {blocks.map((block, index) => {
-        if (block.type === 'paragraph') return <p key={index} className="mb-6 break-words">{block.text}</p>
+        if (block.type === 'paragraph') return <p key={index} className="mb-6 break-words text-justify hyphens-auto">{block.text}</p>
         if (block.type === 'heading') {
           const anchor = anchorByBlock.get(index)
           return <h2 key={index} id={anchor?.id} className="scroll-mt-24 mb-4 mt-10 break-words font-sans text-3xl font-extrabold leading-tight tracking-[-0.035em]">{block.text}</h2>
@@ -24,7 +24,7 @@ export function RichContent({ blocks }: RichContentProps) {
         if (block.type === 'list') {
           return (
             <ul key={index} className="mb-6 list-disc pl-6">
-              {block.items.map((item) => <li key={item} className="mb-2 break-words">{item}</li>)}
+              {block.items.map((item) => <li key={item} className="mb-2 break-words text-justify hyphens-auto">{item}</li>)}
             </ul>
           )
         }
