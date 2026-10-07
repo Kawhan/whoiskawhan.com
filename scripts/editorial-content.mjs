@@ -103,24 +103,28 @@ export function getPublishedPosts() {
 
 // ── TIL collection ────────────────────────────────────────────────────
 
-export function getPublishedTilEntries() {
+// Cada TIL tem um arquivo por idioma com o mesmo slug (`x.md` e `x.en.md`),
+// então a lista precisa ser filtrada por locale para não duplicar entradas.
+export function getPublishedTilEntries(locale = 'pt-BR') {
   if (!existsSync(TIL_DIR)) return []
 
   const files = readdirSync(TIL_DIR).filter(f => f.endsWith('.md'))
   const entries = []
+  const urlPrefix = locale === 'en' ? '/en/til' : '/til'
 
   for (const file of files) {
     const raw = readFileSync(join(TIL_DIR, file), 'utf8')
     const { metadata } = parseFrontmatter(raw)
 
     if (metadata.published !== 'true') continue
+    if ((metadata.locale === 'en' ? 'en' : 'pt-BR') !== locale) continue
 
     entries.push({
       slug: metadata.slug,
       title: metadata.title,
       excerpt: metadata.excerpt || '',
       date: metadata.date,
-      url: `${SITE_URL}/til/${metadata.slug}/`,
+      url: `${SITE_URL}${urlPrefix}/${metadata.slug}/`,
     })
   }
 

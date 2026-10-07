@@ -23,6 +23,12 @@ const defaultDescription =
   'Blog e portfólio de Kawhan Laurindo sobre engenharia de software, back-end .NET, automação industrial e front-end.'
 const defaultImage = `/profile/kawhan.jpg`
 
+// O Worker serve dist/<rota>/index.html em /<rota>/ e redireciona /<rota>
+// (307). Canonical, hreflang e og:url precisam da forma final, com barra.
+const withSlash = (url) => (url.endsWith('/') ? url : `${url}/`)
+
+const absoluteUrl = (path) => (path.startsWith('http') ? path : `${siteUrl}${path}`)
+
 // ── SEO helpers ──────────────────────────────────────────────────────
 
 const personJsonLd = {
@@ -51,7 +57,7 @@ const websiteJsonLd = {
  * and JSON-LD into a built HTML string.
  */
 function injectSeoTags(html, { title, description, url, image, type, jsonLd, locale }, hreflangLinks = []) {
-  const imageUrl = image?.startsWith('http') ? image : `${siteUrl}${image ?? defaultImage}`
+  const imageUrl = absoluteUrl(image ?? defaultImage)
   const escapedTitle = escapeHtml(title)
   const escapedDescription = escapeHtml(description)
   const escapedUrl = escapeHtml(url)
@@ -81,7 +87,7 @@ function injectSeoTags(html, { title, description, url, image, type, jsonLd, loc
   return html
 }
 
-function getHreflangLinks(route, ptPosts, enPosts) {
+function getHreflangLinks(route, ptPosts, enPosts, til) {
   const ptToEn = {
     '/': '/en/',
     '/about': '/en/about',
@@ -100,10 +106,7 @@ function getHreflangLinks(route, ptPosts, enPosts) {
     Object.entries(ptToEn).map(([pt, en]) => [en, pt]),
   )
 
-  const toUrl = (r) => {
-    if (r === '/' || r === '/en/') return `${siteUrl}${r}`
-    return `${siteUrl}${r}`
-  }
+  const toUrl = (r) => withSlash(`${siteUrl}${r}`)
 
   const links = []
 
@@ -123,8 +126,19 @@ function getHreflangLinks(route, ptPosts, enPosts) {
     const slug = blogMatch[2]
 
     if (isEn ? ptPosts.some((p) => p.slug === slug) : enPosts.some((p) => p.slug === slug)) {
-      links.push(`<link rel="alternate" hreflang="pt-BR" href="${escapeHtml(`${siteUrl}/blog/${slug}`)}" />`)
-      links.push(`<link rel="alternate" hreflang="en" href="${escapeHtml(`${siteUrl}/en/blog/${slug}`)}" />`)
+      links.push(`<link rel="alternate" hreflang="pt-BR" href="${escapeHtml(toUrl(`/blog/${slug}`))}" />`)
+      links.push(`<link rel="alternate" hreflang="en" href="${escapeHtml(toUrl(`/en/blog/${slug}`))}" />`)
+    }
+  }
+
+  const tilRouteMatch = route.match(/^(\/en)?\/til\/(.+)/)
+  if (tilRouteMatch) {
+    const isEn = Boolean(tilRouteMatch[1])
+    const slug = tilRouteMatch[2]
+
+    if ((isEn ? til.pt : til.en).some((e) => e.slug === slug)) {
+      links.push(`<link rel="alternate" hreflang="pt-BR" href="${escapeHtml(toUrl(`/til/${slug}`))}" />`)
+      links.push(`<link rel="alternate" hreflang="en" href="${escapeHtml(toUrl(`/en/til/${slug}`))}" />`)
     }
   }
 
@@ -132,8 +146,8 @@ function getHreflangLinks(route, ptPosts, enPosts) {
   const projectRouteMatch = route.match(/^(\/en)?\/projects\/(.+)/)
   if (projectRouteMatch) {
     const id = projectRouteMatch[2]
-    links.push(`<link rel="alternate" hreflang="pt-BR" href="${escapeHtml(`${siteUrl}/projects/${id}`)}" />`)
-    links.push(`<link rel="alternate" hreflang="en" href="${escapeHtml(`${siteUrl}/en/projects/${id}`)}" />`)
+    links.push(`<link rel="alternate" hreflang="pt-BR" href="${escapeHtml(toUrl(`/projects/${id}`))}" />`)
+    links.push(`<link rel="alternate" hreflang="en" href="${escapeHtml(toUrl(`/en/projects/${id}`))}" />`)
   }
 
   // x-default aponta para a versão em português, que é a raiz do site.
@@ -146,7 +160,7 @@ function getHreflangLinks(route, ptPosts, enPosts) {
   return links
 }
 
-function getSeoForRoute(route, ptPosts, enPosts, tilEntries, content) {
+function getSeoForRoute(route, ptPosts, enPosts, til, content) {
   const projectMatch = route.match(/^(\/en)?\/projects\/(.+)/)
   if (projectMatch && content) {
     const prefix = projectMatch[1] ?? ''
@@ -155,7 +169,7 @@ function getSeoForRoute(route, ptPosts, enPosts, tilEntries, content) {
     if (project) {
       const messages = isEn ? content.en : content.ptBR
       const description = messages.openSource.projects[project.id]
-      const url = `${siteUrl}${prefix}/projects/${project.id}`
+      const url = withSlash(`${siteUrl}${prefix}/projects/${project.id}`)
       return {
         locale: isEn ? 'en' : 'pt-BR',
         title: `${project.name} – ${siteName}`,
@@ -185,7 +199,7 @@ function getSeoForRoute(route, ptPosts, enPosts, tilEntries, content) {
     const posts = isEn ? enPosts : ptPosts
     const post = posts.find((p) => p.slug === slug)
     if (post) {
-      const postUrl = isEn ? `${siteUrl}/en/blog/${slug}` : `${siteUrl}/blog/${slug}`
+      const postUrl = withSlash(isEn ? `${siteUrl}/en/blog/${slug}` : `${siteUrl}/blog/${slug}`)
       const coverImage = post.cover || defaultImage
       return {
         locale: isEn ? 'en' : 'pt-BR',
@@ -199,7 +213,8 @@ function getSeoForRoute(route, ptPosts, enPosts, tilEntries, content) {
           '@type': 'BlogPosting',
           headline: post.title,
           description: post.excerpt || '',
-          image: coverImage,
+          // Dados estruturados exigem URL absoluta; og:image é resolvida em injectSeoTags.
+          image: absoluteUrl(coverImage),
           datePublished: post.date,
           url: postUrl,
           author: { '@type': 'Person', name: post.author || siteName },
@@ -212,9 +227,9 @@ function getSeoForRoute(route, ptPosts, enPosts, tilEntries, content) {
   if (tilMatch) {
     const prefix = tilMatch[1] ?? ''
     const slug = tilMatch[2]
-    const entry = tilEntries.find((e) => e.slug === slug)
+    const entry = (prefix ? til.en : til.pt).find((e) => e.slug === slug)
     if (entry) {
-      const entryUrl = `${siteUrl}${prefix}/til/${slug}`
+      const entryUrl = withSlash(`${siteUrl}${prefix}/til/${slug}`)
       return {
         locale: prefix ? 'en' : 'pt-BR',
         title: `${entry.title} – ${siteName}`,
@@ -310,13 +325,13 @@ function getSeoForRoute(route, ptPosts, enPosts, tilEntries, content) {
 
   const page = staticPages[route]
   if (page) {
-    const canonical = route === '/' ? `${siteUrl}/` : `${siteUrl}${route}`
+    const canonical = withSlash(`${siteUrl}${route}`)
     return { ...page, url: canonical, image: defaultImage, type: 'website' }
   }
 
   return {
     locale: 'pt-BR', title: defaultTitle, description: defaultDescription,
-    url: `${siteUrl}${route}`, image: defaultImage, type: 'website', jsonLd: personJsonLd,
+    url: withSlash(`${siteUrl}${route}`), image: defaultImage, type: 'website', jsonLd: personJsonLd,
   }
 }
 
@@ -324,14 +339,14 @@ function getSeoForRoute(route, ptPosts, enPosts, tilEntries, content) {
 
 async function main() {
   const { ptPosts, enPosts } = getPublishedPosts()
-  const tilEntries = getPublishedTilEntries()
+  const til = { pt: getPublishedTilEntries('pt-BR'), en: getPublishedTilEntries('en') }
 
   const ptStatic = ['/', '/about', '/certificates', '/blog', '/til', '/portfolio', '/hobbies', '/books', '/privacy-policy', '/terms-of-use', '/404']
   const ptBlog = ptPosts.map((p) => `/blog/${p.slug}`)
-  const ptTil = tilEntries.map((e) => `/til/${e.slug}`)
+  const ptTil = til.pt.map((e) => `/til/${e.slug}`)
   const enStatic = ['/en/', '/en/about', '/en/certificates', '/en/blog', '/en/til', '/en/portfolio', '/en/hobbies', '/en/books', '/en/privacy-policy', '/en/terms-of-use']
   const enBlog = enPosts.map((p) => `/en/blog/${p.slug}`)
-  const enTil = tilEntries.map((e) => `/en/til/${e.slug}`)
+  const enTil = til.en.map((e) => `/en/til/${e.slug}`)
   const templatePath = join(distDir, 'index.html')
   let template
   try {
@@ -360,10 +375,10 @@ async function main() {
   console.log(`Prerendering ${routes.length} routes …\n`)
 
   for (const route of routes) {
-    const seo = getSeoForRoute(route, ptPosts, enPosts, tilEntries, { openSourceProjects, ptBR, en })
+    const seo = getSeoForRoute(route, ptPosts, enPosts, til, { openSourceProjects, ptBR, en })
     const appHtml = render(route)
     let html = template.replace('<div id="root"></div>', `<div id="root">${appHtml}</div>`)
-    const hreflangLinks = getHreflangLinks(route, ptPosts, enPosts)
+    const hreflangLinks = getHreflangLinks(route, ptPosts, enPosts, til)
     html = injectSeoTags(html, seo, hreflangLinks)
 
     const normalized = route === '/' ? '' : route
@@ -388,8 +403,11 @@ async function main() {
   for (const p of enPosts) {
     if (p.date) dateByRoute[`/en/blog/${p.slug}`] = p.date
   }
-  for (const e of tilEntries) {
+  for (const e of til.pt) {
     if (e.date) dateByRoute[`/til/${e.slug}`] = e.date
+  }
+  for (const e of til.en) {
+    if (e.date) dateByRoute[`/en/til/${e.slug}`] = e.date
   }
 
   const today = new Date().toISOString().split('T')[0]
