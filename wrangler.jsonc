@@ -1,0 +1,11 @@
+{
+  "name": "whoiskawhan-com",
+  "compatibility_date": "2026-10-06",
+  "assets": {
+    "directory": "./dist",
+    // Caminho inexistente → dist/404.html com status 404 (não a home com 200).
+    "not_found_handling": "404-page",
+    // Padrão atual: dist/about/index.html é servido em /about/.
+    "html_handling": "auto-trailing-slash"
+  }
+}

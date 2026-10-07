@@ -367,7 +367,11 @@ async function main() {
     html = injectSeoTags(html, seo, hreflangLinks)
 
     const normalized = route === '/' ? '' : route
-    const outPath = join(distDir, normalized, 'index.html')
+    // O Worker (not_found_handling: "404-page" no wrangler.jsonc) serve
+    // dist/404.html com status 404 para qualquer caminho inexistente.
+    const outPath = route === '/404'
+      ? join(distDir, '404.html')
+      : join(distDir, normalized, 'index.html')
     mkdirSync(dirname(outPath), { recursive: true })
     writeFileSync(outPath, html)
 
