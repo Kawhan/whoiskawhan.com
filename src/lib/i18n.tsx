@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router'
 import { en } from '@/locales/en'
 import { ptBR } from '@/locales/pt-BR'
 import { localeFromSegment, localizePath } from './locale-routing'
+import { readStorage, writeStorage } from './storage'
 
 export type Locale = 'pt-BR' | 'en'
 
@@ -43,7 +44,7 @@ function detectInitialLocale(): Locale {
   const isBrowser = typeof window !== 'undefined'
 
   if (isBrowser) {
-    const persisted = normalizeLocale(window.localStorage.getItem(STORAGE_KEY))
+    const persisted = normalizeLocale(readStorage(STORAGE_KEY))
     if (persisted) return persisted
   }
 
@@ -65,7 +66,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
   React.useEffect(() => {
     document.documentElement.lang = locale
-    window.localStorage.setItem(STORAGE_KEY, locale)
+    writeStorage(STORAGE_KEY, locale)
   }, [locale])
 
   const value = React.useMemo<I18nContextValue>(() => {

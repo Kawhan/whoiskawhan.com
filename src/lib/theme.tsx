@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React from 'react'
+import { readStorage, writeStorage } from './storage'
 
 export type Theme = 'light' | 'dark'
 
@@ -15,7 +16,7 @@ const ThemeContext = React.createContext<ThemeContextValue | null>(null)
 function detectInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'light'
 
-  const persisted = window.localStorage.getItem(STORAGE_KEY)
+  const persisted = readStorage(STORAGE_KEY)
   if (persisted === 'light' || persisted === 'dark') return persisted
 
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
@@ -27,7 +28,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
     document.documentElement.style.colorScheme = theme
-    window.localStorage.setItem(STORAGE_KEY, theme)
+    writeStorage(STORAGE_KEY, theme)
   }, [theme])
 
   const value = React.useMemo<ThemeContextValue>(() => ({
